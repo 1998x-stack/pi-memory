@@ -18,6 +18,7 @@ import { ingestPiSession } from "../src/transcripts/pi-indexer.mjs";
 import { reconcileMissingSessions } from "../src/store/integrity.mjs";
 import { openNoteRepository, noteToMarkdown } from "../src/notes/notes.mjs";
 import { openL4Controller } from "../src/injection/l4-index.mjs";
+import { openForgetRepository } from "../src/governance/forget.mjs";
 import { resolveMemoryQuery } from "../src/retrieval/memory-query.mjs";
 
 function digest(value: string): string {
@@ -45,6 +46,7 @@ function safeMessage(error: unknown) {
     if (error.message.includes("Evidence not available")) return "Evidence is missing or changed; index again.";
     if (error.message.includes("Evidence is missing/modified")) return "Evidence changed; index and review again.";
     if (error.message.includes("Note not found")) return "Note not found in this project.";
+    if (error.message.includes("Indexed Session not found")) return "No indexed Session in the current project.";
   }
   return "Pi Memory operation failed. Inspect local diagnostic logs; existing Pi functionality is unaffected.";
 }
@@ -64,7 +66,8 @@ const HELP=[
   "/pi-memory index | status | search <query> | reconcile | recover",
   "/pi-memory note add <type> <sessionId>#<entryId> | <title> | <content>",
   "/pi-memory note list | show <id> | approve <id> | revoke <id> | export <id>",
-  "/pi-memory l4 on | off | preview | stats"
+  "/pi-memory l4 on | off | preview | stats",
+  "/pi-memory forget note <mem_uuid> confirm | session <sessionId> confirm | cleanup confirm | status"
 ].join("\n");
 
 export default function piMemoryExtension(pi: ExtensionAPI): void {
@@ -91,7 +94,7 @@ export default function piMemoryExtension(pi: ExtensionAPI): void {
       const notify = (message:string, level:"info"|"warning"|"error"="info") => {
         if (ctx.hasUI) ctx.ui.notify(message,level);
       };
-      if (!["index","status","search","note","l4","reconcile","recover"].includes(command)) {
+      if (!["index","status","search","note","l4","reconcile","recover","forget"].includes(command)) {
         notify(HELP);
         return;
       }
@@ -101,6 +104,34 @@ export default function piMemoryExtension(pi: ExtensionAPI): void {
         store=openMemoryStore();
         const notes=openNoteRepository(store);
         const l4=openL4Controller(store);
+        const governance=openForgetRepository(store);
+        if (command === "forget") {
+          const [kind,id,confirmation]=rest;
+          if (kind==="status") {
+            notify("Derived Markdown cleanup pending: "+governance.cleanupPending(scope)+
+              ". Source Pi JSONL and external backups are never altered.");
+            return;
+          }
+          if(kind==="cleanup" && id==="confirm" && rest.length===2) {
+            const r=await governance.drainCleanup(scope);
+            notify("Cleanup retry: processed="+r.removedExports+" failures="+r.exportCleanupFailures+
+              " WAL busy="+r.walCheckpointBusy+".");return;
+          }
+          if((kind!=="note"&&kind!=="session")||!id||confirmation!=="confirm"||rest.length!==3) {
+            notify("Destructive derived-only forget requires: /pi-memory forget note <id> confirm "+
+              "or /pi-memory forget session <id> confirm. Pi native session files remain untouched.","warning");
+            return;
+          }
+          const result=kind==="note"
+            ? await governance.forgetNote(id,scope)
+            : await governance.forgetSession(id,scope);
+          notify("Derived "+kind+" forgotten. dependentNotesPurged="+(result.dependentNotesPurged??0)+
+            ", exportedFilesRemoved="+result.removedExports+
+            ", cleanupFailures="+result.exportCleanupFailures+
+            ", WAL busy="+result.walCheckpointBusy+
+            ". Pi original JSONL, previous provider prompts and external backups are NOT deleted.");
+          return;
+        }
         if (command === "status") {
           notify("Pi Memory indexed events in current project: " + store.countEvents(scope) +
             ". Notes: "+notes.list(scope).length+"; L4: "+(l4.stats(scope).enabled?"ON":"OFF")+". Auto capture/Dreaming/Wiki are OFF.");

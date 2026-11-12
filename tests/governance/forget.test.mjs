@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp,mkdir,copyFile,readFile,writeFile,access,rm } from "node:fs/promises";
+import { mkdtemp,mkdir,rmdir,copyFile,readFile,writeFile,access,rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -106,4 +106,24 @@ test("SQLite secure_delete is enabled for erasure best-effort; archive/backups r
     assert.equal(t.store.database.prepare("SELECT count(*) as n FROM memory_notes").get().n,0);
     assert.equal(t.store.database.prepare("SELECT count(*) as n FROM memory_note_evidence").get().n,0);
   }finally{await t.cleanup();}
+});
+
+
+test("Export cleanup outbox preserves failed deletion and supports safe retry",async()=>{
+  const t=await setup();
+  try {
+    const id=t.makeNote("Pending export cleanup");
+    const directory=join(t.dir,"notes");await mkdir(directory);
+    const unusual=join(directory,id+".md");
+    await mkdir(unusual);
+    const result=await t.forget.forgetNote(id,scope);
+    assert.equal(result.exportCleanupFailures,1);
+    assert.equal(t.forget.cleanupPending(scope),1);
+    assert.equal(t.notes.get(id,scope),null,"SQLite erase is committed even if file cleanup fails");
+    await rmdir(unusual);
+    const retry=await t.forget.drainCleanup(scope);
+    assert.equal(retry.exportCleanupFailures,0);
+    assert.equal(t.forget.cleanupPending(scope),0);
+    assert.equal(t.forget.isNoteForgotten(id,scope),true);
+  } finally {await t.cleanup();}
 });
