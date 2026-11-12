@@ -25,6 +25,7 @@ async function check() {
     env: { ...process.env, PI_CODING_AGENT_DIR: agentDir, CI: "true", NO_COLOR: "1" },
     stdio: ["pipe", "pipe", "pipe"],
   });
+  const childClosed = new Promise(resolveClose => child.once("close", resolveClose));
   let stdoutBuffer = "";
   let stderr = "";
   let finished = false;
@@ -69,6 +70,7 @@ async function check() {
   } finally {
     child.stdin.end();
     if (!child.killed) child.kill("SIGTERM");
+    await Promise.race([childClosed, new Promise(resolveWait => setTimeout(resolveWait, 5000))]);
   }
 }
 

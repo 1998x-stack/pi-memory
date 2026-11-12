@@ -32,6 +32,7 @@ try {
     cwd,env:{...process.env,PI_CODING_AGENT_DIR:agentDir,CI:"true",NO_COLOR:"1"},
     stdio:["pipe","pipe","pipe"]
   });
+  const childClosed=new Promise(resolveClose=>child.once("close",resolveClose));
   let buffer="",stderr="";
   const pending=new Map();
   const notifications=[];
@@ -94,6 +95,10 @@ try {
   }finally{store.close();}
   process.stdout.write("PASS real Pi RPC cross-session FTS memory recall, no model call\n");
 }finally{
-  if(child){child.stdin.end();if(!child.killed)child.kill("SIGTERM");}
+  if(child){
+    child.stdin.end();
+    if(!child.killed)child.kill("SIGTERM");
+    await Promise.race([childClosed,new Promise(resolveWait=>setTimeout(resolveWait,5000))]);
+  }
   await rm(temp,{recursive:true,force:true});
 }
