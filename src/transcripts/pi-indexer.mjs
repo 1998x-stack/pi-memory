@@ -112,6 +112,7 @@ export async function ingestPiSession(store, inputPath, options) {
       after.ino !== before.ino || after.dev !== before.dev) {
     throw new Error("Pi Session file changed during ingestion; retry safely");
   }
+  if (doc.issues.length) throw new Error("Pi Session integrity issues; refusing partial index commit");
   const canonical = normalizePiRecords(doc, {
     sourceNamespace: options.sourceNamespace,
     projectId: options.projectId
@@ -129,13 +130,15 @@ export async function ingestPiSession(store, inputPath, options) {
   // Ensure event ingestion, FTS triggers and durable checkpoint commit together.
   store.transaction(() => {
     store.checkCheckpoint(options.sourceNamespace,header.id,previous);
-    if (mode === "full") store.deleteSessionEvents(options.sourceNamespace,header.id);
+    if (mode === "full") store.beginFullRebuild();
     for (let i=0;i<canonical.length;i++) {
+      if (mode === "full") store.keepEvent(canonical[i].id);
       const event=canonical[i];
       const raw=doc.records[i].entry;
       const snippet=indexablePiText(raw);
       store.putEvent(event,snippet,options);
     }
+    if (mode === "full") store.finishFullRebuild(options.sourceNamespace,header.id);
     store.saveSession(state);
   });
   return {

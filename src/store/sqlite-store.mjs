@@ -18,7 +18,7 @@ const SCHEMA = [
   "CREATE TRIGGER IF NOT EXISTS events_fts_insert AFTER INSERT ON events BEGIN INSERT INTO events_fts(rowid,snippet) VALUES (new.rowid,new.snippet); END;",
   "CREATE TRIGGER IF NOT EXISTS events_fts_delete AFTER DELETE ON events BEGIN INSERT INTO events_fts(events_fts,rowid,snippet) VALUES ('delete',old.rowid,old.snippet); END;",
   "CREATE TRIGGER IF NOT EXISTS events_fts_update AFTER UPDATE ON events BEGIN INSERT INTO events_fts(events_fts,rowid,snippet) VALUES ('delete',old.rowid,old.snippet); INSERT INTO events_fts(rowid,snippet) VALUES (new.rowid,new.snippet); END;",
-  "CREATE TABLE IF NOT EXISTS memory_notes (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, project_id TEXT NOT NULL, status TEXT NOT NULL CHECK (status IN ('candidate','verified','disputed','revoked')), note_type TEXT NOT NULL CHECK (note_type IN ('fact','procedure','decision','preference','failure')), title TEXT NOT NULL, content TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, verified_at TEXT, revision INTEGER NOT NULL DEFAULT 1, source_trust TEXT NOT NULL DEFAULT 'user_explicit');",
+  "CREATE TABLE IF NOT EXISTS memory_notes (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, project_id TEXT NOT NULL, status TEXT NOT NULL CHECK (status IN ('candidate','verified','disputed','revoked')), note_type TEXT NOT NULL CHECK (note_type IN ('fact','procedure','decision','preference','failure')), title TEXT NOT NULL, content TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, verified_at TEXT, revision INTEGER NOT NULL DEFAULT 1, evidence_count INTEGER NOT NULL DEFAULT 0, source_trust TEXT NOT NULL DEFAULT 'user_explicit');",
   "CREATE INDEX IF NOT EXISTS memory_notes_scope ON memory_notes(owner_id,project_id,status);",
   "CREATE TABLE IF NOT EXISTS memory_note_evidence (note_id TEXT NOT NULL REFERENCES memory_notes(id) ON DELETE CASCADE, event_id TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE, source_hash TEXT NOT NULL, PRIMARY KEY (note_id,event_id));",
   "CREATE TABLE IF NOT EXISTS memory_project_settings (owner_id TEXT NOT NULL, project_id TEXT NOT NULL, l4_enabled INTEGER NOT NULL DEFAULT 0, l4_runs INTEGER NOT NULL DEFAULT 0, l4_changes INTEGER NOT NULL DEFAULT 0, l4_last_hash TEXT, l4_last_bytes INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(owner_id,project_id));"
@@ -36,6 +36,16 @@ export function openMemoryStore(databasePath = defaultMemoryDatabasePath()) {
     chmodSync(databasePath, 0o600); // protect contents from other local users
   } catch { /* Windows filesystems may not support POSIX modes */ }
   db.exec(SCHEMA);
+  // Upgrade the early P1 preview schema, without discarding existing user data.
+  if (!db.prepare("PRAGMA table_info(memory_notes)").all().some(c => c.name === "evidence_count")) {
+    db.exec("BEGIN IMMEDIATE");
+    try {
+      if (!db.prepare("PRAGMA table_info(memory_notes)").all().some(c => c.name === "evidence_count")) {
+        db.exec("ALTER TABLE memory_notes ADD COLUMN evidence_count INTEGER NOT NULL DEFAULT 0");
+      }
+      db.exec("COMMIT");
+    } catch (e) { db.exec("ROLLBACK"); throw e; }
+  }
   const getSessionStatement = db.prepare("SELECT * FROM sessions WHERE source_namespace=? AND session_id=?");
   const upsertSessionStatement = db.prepare(
     "INSERT INTO sessions (source_namespace,session_id,owner_id,project_id,source_file,header_json,last_complete_offset,last_complete_line,source_size,source_mtime_ms,source_dev,source_ino,last_record_offset,last_record_bytes,last_record_hash,updated_at) " +
@@ -67,6 +77,20 @@ export function openMemoryStore(databasePath = defaultMemoryDatabasePath()) {
         scope.ownerId,scope.projectId,event.entryType,event.role,event.toolCallId,event.toolName,
         event.toolError ? 1 : 0,event.rawHash,event.sourceOffset,event.sourceLine,snippet
       );
+    },
+    beginFullRebuild() {
+      db.exec("CREATE TEMP TABLE IF NOT EXISTS pi_memory_ingest_keep_ids (id TEXT PRIMARY KEY)");
+      db.exec("DELETE FROM pi_memory_ingest_keep_ids");
+    },
+    keepEvent(id) {
+      db.prepare("INSERT OR IGNORE INTO pi_memory_ingest_keep_ids(id) VALUES (?)").run(id);
+    },
+    finishFullRebuild(namespace,sessionId) {
+      const invalidSql = "UPDATE memory_notes SET status='disputed',updated_at=?,verified_at=NULL,revision=revision+1 WHERE status='verified' AND id IN (SELECT ne.note_id FROM memory_note_evidence ne JOIN events e ON e.id=ne.event_id WHERE e.source_namespace=? AND e.session_id=? AND e.id NOT IN (SELECT id FROM pi_memory_ingest_keep_ids))";
+      db.prepare(invalidSql).run(new Date().toISOString(),namespace,sessionId);
+      db.prepare("DELETE FROM events WHERE source_namespace=? AND session_id=? AND id NOT IN (SELECT id FROM pi_memory_ingest_keep_ids)")
+        .run(namespace,sessionId);
+      db.exec("DELETE FROM pi_memory_ingest_keep_ids");
     },
     deleteSessionEvents(namespace, sessionId) {
       return db.prepare("DELETE FROM events WHERE source_namespace=? AND session_id=?").run(namespace, sessionId);
