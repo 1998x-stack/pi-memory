@@ -18,7 +18,7 @@ const source=join(sessionDir,"synthetic.jsonl");
 const needle="PI_MEMORY_REAL_RPC_RECALL_2048";
 const d=s=>createHash("sha256").update(s).digest("hex");
 let child;
-let cleanup;
+let childClosed=Promise.resolve();
 try {
   await mkdir(agentDir,{recursive:true});
   await mkdir(sessionDir,{recursive:true});
@@ -32,7 +32,7 @@ try {
     cwd,env:{...process.env,PI_CODING_AGENT_DIR:agentDir,CI:"true",NO_COLOR:"1"},
     stdio:["pipe","pipe","pipe"]
   });
-  const childClosed=new Promise(resolveClose=>child.once("close",resolveClose));
+  childClosed=new Promise(resolveClose=>child.once("close",resolveClose));
   let buffer="",stderr="";
   const pending=new Map();
   const notifications=[];
