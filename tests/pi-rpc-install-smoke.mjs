@@ -10,6 +10,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 
 const installed = process.argv.includes("--installed");
+const disabled = process.argv.includes("--disabled");
 const existingAgentDir = process.env.PI_CODING_AGENT_DIR;
 const agentDir = existingAgentDir ?? await mkdtemp(resolve(tmpdir(), "pi-memory-rpc-"));
 const shouldClean = !existingAgentDir;
@@ -18,6 +19,7 @@ const cwd = resolve(import.meta.dirname, "..");
 async function check() {
   const args = ["--mode", "rpc", "--no-session"];
   if (!installed) args.push("-ne", "-e", cwd);
+  else if (disabled) args.push("-ne");
   const child = spawn("pi", args, {
     cwd,
     env: { ...process.env, PI_CODING_AGENT_DIR: agentDir, CI: "true", NO_COLOR: "1" },
@@ -61,8 +63,9 @@ async function check() {
     });
     assert.ok(Array.isArray(response.commands), "get_commands must return a commands array");
     const names = response.commands.filter(c => c.source === "extension").map(c => c.name);
-    assert.ok(names.includes("pi-memory-doctor"), `P0 doctor absent. Extension commands: ${names.join(", ")}; stderr: ${stderr.slice(-1000)}`);
-    process.stdout.write(`PASS real Pi RPC: doctor registered (${installed ? "installed package" : "source extension"})\n`);
+    if (disabled) assert.ok(!names.includes("pi-memory-doctor"), "Pi loaded disabled extension unexpectedly");
+    else assert.ok(names.includes("pi-memory-doctor"), `P0 doctor absent. Extension commands: ${names.join(", ")}; stderr: ${stderr.slice(-1000)}`);
+    process.stdout.write(`PASS real Pi RPC: ${disabled ? "disabled extension absent" : "doctor registered"} (${installed ? "installed package" : "source extension"})\n`);
   } finally {
     child.stdin.end();
     if (!child.killed) child.kill("SIGTERM");

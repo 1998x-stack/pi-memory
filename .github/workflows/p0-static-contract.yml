@@ -65,3 +65,15 @@ jobs:
           pi list
       - name: Test extension from installed Git package through Pi RPC
         run: node tests/pi-rpc-install-smoke.mjs --installed
+      - name: Verify --no-extensions disables package registration
+        run: node tests/pi-rpc-install-smoke.mjs --installed --disabled
+      - name: Verify pinned Git update/removal preserves memory data outside checkout
+        run: |
+          SOURCE="git:github.com/1998x-stack/pi-memory@${GITHUB_SHA}"
+          mkdir -p "$PI_CODING_AGENT_DIR/memory"
+          echo "user-persistent-memory-test" > "$PI_CODING_AGENT_DIR/memory/uninstall-sentinel.txt"
+          pi update --extensions
+          test "$(cat "$PI_CODING_AGENT_DIR/memory/uninstall-sentinel.txt")" = "user-persistent-memory-test"
+          pi remove "$SOURCE"
+          test "$(cat "$PI_CODING_AGENT_DIR/memory/uninstall-sentinel.txt")" = "user-persistent-memory-test"
+
