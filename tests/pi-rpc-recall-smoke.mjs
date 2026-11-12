@@ -126,8 +126,16 @@ try {
     assert.equal(revoke.disposition,"handled");
     assert.equal(notes.get(id,scope).status,"revoked");
     assert.equal(l4.render(scope).count,0,"revoked Note must disappear from L4 immediately");
+    const notificationsBeforeRevokeSearch=notifications.length;
     await request("prompt",{message:"/pi-memory search "+id});
-    assert.ok(notifications.at(-1).includes("No matching indexed evidence"),
+    // Pi RPC acknowledges command preflight before the asynchronous command
+    // handler emits extension_ui_request notify; wait for the actual UI record.
+    const until=Date.now()+3000;
+    while(notifications.length===notificationsBeforeRevokeSearch && Date.now()<until) {
+      await new Promise(resolveTimeout=>setTimeout(resolveTimeout,15));
+    }
+    assert.ok(notifications.slice(notificationsBeforeRevokeSearch)
+      .some(message=>message.includes("No matching indexed evidence")),
       "Revoked note must not resolve from a copied L4 pointer");
   }finally{store.close();}
   process.stdout.write("PASS real Pi RPC cross-session FTS memory recall, no model call\n");
