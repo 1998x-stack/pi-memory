@@ -127,3 +127,17 @@ test("Export cleanup outbox preserves failed deletion and supports safe retry",a
     assert.equal(t.forget.isNoteForgotten(id,scope),true);
   } finally {await t.cleanup();}
 });
+
+test("Forget removes crash-left UUID-suffixed Markdown export temps",async()=>{
+  const t=await setup();
+  try {
+    const id=t.makeNote("Export interrupted");
+    const directory=join(t.dir,"notes");await mkdir(directory);
+    const temporary=join(directory,id+".md.3ed9050e-007a-4e11-8ced-ea41fd134abb.tmp");
+    await writeFile(temporary,"sensitive note text");
+    const result=await t.forget.forgetNote(id,scope);
+    assert.equal(result.exportCleanupFailures,0);
+    assert.equal(t.forget.cleanupPending(scope),0);
+    await assert.rejects(access(temporary),{code:"ENOENT"});
+  }finally{await t.cleanup();}
+});

@@ -66,7 +66,7 @@ export function openForgetRepository(store) {
         for(const name of entries){
           const tail=name.slice(prefix.length);
           if(name.startsWith(prefix) &&
-             /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.tmp$/i.test(tail)){
+             /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.tmp$/i.test(tail)){
             const file=join(directory,name);
             const st=await lstat(file);
             if(st.isFile()||st.isSymbolicLink()) await unlink(file);
