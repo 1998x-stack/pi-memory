@@ -23,7 +23,8 @@ const SCHEMA = [
   "CREATE INDEX IF NOT EXISTS memory_notes_scope ON memory_notes(owner_id,project_id,status);",
   "CREATE TABLE IF NOT EXISTS memory_note_evidence (note_id TEXT NOT NULL REFERENCES memory_notes(id) ON DELETE CASCADE, event_id TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE, source_hash TEXT NOT NULL, PRIMARY KEY (note_id,event_id));",
   "CREATE TABLE IF NOT EXISTS memory_project_settings (owner_id TEXT NOT NULL, project_id TEXT NOT NULL, l4_enabled INTEGER NOT NULL DEFAULT 0, l4_runs INTEGER NOT NULL DEFAULT 0, l4_changes INTEGER NOT NULL DEFAULT 0, l4_last_hash TEXT, l4_last_bytes INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(owner_id,project_id));",
-  "CREATE TABLE IF NOT EXISTS memory_tombstones (owner_id TEXT NOT NULL, project_id TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('note','session')), item_hash TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(owner_id,project_id,kind,item_hash));"
+  "CREATE TABLE IF NOT EXISTS memory_tombstones (owner_id TEXT NOT NULL, project_id TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('note','session')), item_hash TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(owner_id,project_id,kind,item_hash));",
+  "CREATE TABLE IF NOT EXISTS memory_cleanup_outbox (owner_id TEXT NOT NULL, project_id TEXT NOT NULL, note_id TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(owner_id,project_id,note_id));"
 ].join("\n");
 
 export function defaultMemoryDatabasePath() {
