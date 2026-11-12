@@ -1,6 +1,6 @@
 # Implementation roadmap — P1 through P4
 
-> **G0 是新增硬前提**：源码 Manifest 与 install probe 已提交，但真实 Pi 安装测试尚未执行。P1–P4 仍是规划。建议按 *验收门槛* 而非日历时间推进；禁止“写完文件即算完成”。
+> **2026-11-12 状态**：G0 的 Linux Git/local Package + RPC 加载已实测通过，但 Project Trust/Reload/多 OS/更新与卸载矩阵仍未全部签收。P1 已实现并测试 Parser、FTS5、显式 Index 和跨 Session Recall（非完整 G1）；P2–P4 仍是规划。按 Gate 推进，不能用部分 CI 通过替代完整验收。
 
 ## 1. Dependency graph
 

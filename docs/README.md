@@ -1,6 +1,6 @@
 # Documentation hub / 文档导航
 
-> 状态：**P0 仅安装探针已加入；Memory Engine 尚未实现**，也尚无真实 Pi 安装运行证据。源码复核和功能验收结果必须分开标记。
+> 状态：**P1 early preview 已有真实 Pi Git/local Package RPC 加载、手工 Index、跨 Session FTS5 检索测试**。自动采集、L2/L3/L4 与 Dreaming 尚未实现；G0/G1 完整验收仍待补齐。
 
 ## 上游复核、安装与 QA（先读）
 
@@ -10,6 +10,13 @@
 - [Extension/Session 生命周期矩阵](12-runtime-lifecycle-matrix.md)
 - [复核后路线图](13-verified-roadmap.md)
 - [安装验收矩阵](qa/install-test-matrix.md) · [数据正确性/安全矩阵](qa/data-integrity-test-matrix.md)
+
+## 已完成的早期代码切片
+
+- [P1 Parser + Branch/Compaction Projection](14-p1-parser-foundation.md)
+- [P1 SQLite FTS5 + 增量索引](15-p1-indexer-fts.md)
+- [P1 真实 Pi Runtime Recall 接入](16-p1-live-recall.md)
+- [GitHub Actions 结果与剩余 Gate](qa/install-results.md)
 
 ## 总体设计
 
