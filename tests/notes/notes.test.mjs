@@ -81,7 +81,7 @@ test("L2 full reindex preserves evidence FKs when stable event ID is unchanged",
   t.repo.approve(n.id,scope);
   const text=await readFile(t.file,"utf8");
   await writeFile(t.file,text+"\n");
-  const outcome=await ingestPiSession(t.store,t.file,{...scope,allowedSessionRoot:t.sessions,captureApproved:true});
+  const outcome=await ingestPiSession(t.store,t.file,{...scope,allowedSessionRoot:t.sessions,captureApproved:true,forceFull:true});
   assert.equal(outcome.mode,"full");
   assert.equal(t.repo.get(n.id,scope).status,"verified");
   assert.equal(t.repo.get(n.id,scope).evidenceComplete,true);

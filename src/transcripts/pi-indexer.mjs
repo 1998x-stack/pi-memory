@@ -84,7 +84,7 @@ export async function ingestPiSession(store, inputPath, options) {
   if (previous && (previous.owner_id !== options.ownerId || previous.project_id !== options.projectId)) {
     throw new Error("Pi Session scope mismatch: refusing cross-project overwrite");
   }
-  if (previous && previous.source_size === before.size &&
+  if (!options.forceFull && previous && previous.source_size === before.size &&
       previous.source_mtime_ms === before.mtimeMs &&
       previous.source_file === source &&
       previous.source_ino === String(before.ino) &&
@@ -92,7 +92,7 @@ export async function ingestPiSession(store, inputPath, options) {
     return { mode:"unchanged", sessionId:header.id, processed:0, issues:[] };
   }
 
-  const canResume = Boolean(previous &&
+  const canResume = Boolean(!options.forceFull && previous &&
     previous.source_file === source &&
     previous.source_size < before.size &&
     previous.last_complete_offset > 0 &&
