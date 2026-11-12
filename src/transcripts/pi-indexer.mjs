@@ -139,6 +139,7 @@ export async function ingestPiSession(store, inputPath, options) {
       store.putEvent(event,snippet,options);
     }
     if (mode === "full") store.finishFullRebuild(options.sourceNamespace,header.id);
+    store.downgradeStaleNoteEvidence(options.sourceNamespace,header.id);
     store.saveSession(state);
   });
   return {

@@ -87,3 +87,21 @@ test("L2 full reindex preserves evidence FKs when stable event ID is unchanged",
   assert.equal(t.repo.get(n.id,scope).evidenceComplete,true);
  }finally{await t.cleanup();}
 });
+
+
+test("L2 Note status is atomically disputed if an indexed evidence event hash changes",async()=>{
+ const t=await setup();
+ try{
+   const n=t.repo.createCandidate(candidate,scope);
+   t.repo.approve(n.id,scope);
+   const text=await readFile(t.file,"utf8");
+   const changed=text.replace("All 14 tests passed","All 99 tests passed");
+   assert.equal(changed.length,text.length);
+   await writeFile(t.file,changed);
+   const out=await ingestPiSession(t.store,t.file,{...scope,allowedSessionRoot:t.sessions,captureApproved:true,forceFull:true});
+   assert.equal(out.mode,"full");
+   assert.equal(t.repo.get(n.id,scope).status,"disputed");
+   assert.equal(t.repo.approvedIndex(scope).length,0);
+   assert.equal(t.repo.get(n.id,scope).evidenceComplete,false);
+ }finally{await t.cleanup();}
+});

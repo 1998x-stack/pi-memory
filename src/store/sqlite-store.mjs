@@ -92,6 +92,13 @@ export function openMemoryStore(databasePath = defaultMemoryDatabasePath()) {
         .run(namespace,sessionId);
       db.exec("DELETE FROM pi_memory_ingest_keep_ids");
     },
+    downgradeStaleNoteEvidence(namespace,sessionId) {
+      const sql="UPDATE memory_notes SET status='disputed',updated_at=?,verified_at=NULL,revision=revision+1 "+
+        "WHERE status='verified' AND id IN (SELECT ne.note_id FROM memory_note_evidence ne "+
+        "JOIN events e ON e.id=ne.event_id WHERE e.source_namespace=? AND e.session_id=? "+
+        "AND ne.source_hash<>e.raw_hash)";
+      return db.prepare(sql).run(new Date().toISOString(),namespace,sessionId);
+    },
     deleteSessionEvents(namespace, sessionId) {
       return db.prepare("DELETE FROM events WHERE source_namespace=? AND session_id=?").run(namespace, sessionId);
     },
