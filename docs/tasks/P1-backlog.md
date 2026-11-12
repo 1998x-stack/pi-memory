@@ -64,3 +64,15 @@ G1: 由对应 Phase 主文档的 Exit Criteria 判定，不仅以 checkbox 数�
 | P1-10 | partial | Pi RPC synthetic session → new_session → search | actual coding task with reproducible success criteria |
 
 **Review status:** L1 retrieval and Pi Package integration work; G1 is not satisfied. Start next with hard purge/forget, race stress and broader Pi trust/platform compatibility before enabling automatic capture.
+
+## Phase P1-G: governance acceptance (2026-11-12)
+
+- [x] Derived Note/Session Forget APIs, scoped hashed tombstones and transactional FTS deletion (see [P1-G](../19-p1-governance-release-gate.md))
+- [x] Persistent outbox for Markdown export cleanup; idempotent retry, symlink boundary, temp export cleanup
+- [x] FTS hit source-line hash verification, same-size rewrite suppression
+- [x] Five independent process SQLite ingestion stress test + bounded CAS conflict retry (automated code, CI result required)
+- [x] Pi RPC explicit trust-denial test with `--no-approve` (automated code, CI result required)
+- [ ] Complete hard privacy erasure across native Pi Sessions, provider records and user backups (outside pi-memory authority)
+- [ ] Platform and mode matrix (macOS, Windows, Bun, TUI, JSON/print), live model cache/evaluation and security audit
+
+These checkboxes reflect **implementation presence**, not automatic G1 release approval. Check [CI runs](https://github.com/1998x-stack/pi-memory/actions) for current test status.

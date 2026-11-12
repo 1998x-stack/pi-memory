@@ -11,7 +11,7 @@ A local-first, evidence-grounded long-term memory extension for [Pi Coding Agent
 - `/pi-memory index` explicitly indexes the **current persisted session**, after project trust is granted.
 - `/pi-memory status` shows indexed event count for current project.
 - `/pi-memory search QUERY` searches previously indexed transcripts.
-- `memory_search` model Tool returns project-scoped **historical raw evidence** with session/entry provenance; not a verified recommendation.\n- `/pi-memory note add/approve/revoke/export` manages human-reviewed L2 Notes linked to Pi source evidence.\n- `/pi-memory l4 on/off/preview/stats` controls bounded, metadata-only L4 context; off by default.\n- `/pi-memory reconcile/recover` handles deleted native sessions and rebuilds derived FTS5 data.
+- `memory_search` model Tool returns project-scoped **historical raw evidence** with session/entry provenance; not a verified recommendation.\n- `/pi-memory note add/approve/revoke/export` manages human-reviewed L2 Notes linked to Pi source evidence.\n- `/pi-memory l4 on/off/preview/stats` controls bounded, metadata-only L4 context; off by default.\n- `/pi-memory reconcile/recover` handles deleted native sessions and rebuilds derived FTS5 data.\n- `/pi-memory forget note|session ... confirm` erases explicitly selected **derived** memory, with tombstones and retryable Markdown cleanup. Native Pi source JSONL is not deleted.
 - Parser supports Pi v3 JSONL streaming, branch lineage, compaction and context edits; SQLite FTS5 supports incremental append and full rewrite reconciliation.
 
 ## Try it in Pi
@@ -66,7 +66,7 @@ For development from this repo root, use `pi -e ./`; `pi -ne` disables discovere
 - [P0 upstream/install audit](docs/10-upstream-audit.md) · [Test results](docs/qa/install-results.md)
 - [P1 parser and provenance](docs/14-p1-parser-foundation.md)
 - [P1 scoped FTS indexer](docs/15-p1-indexer-fts.md)
-- [Pi runtime integration/recall contract](docs/16-p1-live-recall.md)\n- [Integrity + human L2 Notes + controlled L4](docs/17-p1-integrity-notes-l4.md)\n- [P1 follow-on audit and proof matrix](docs/18-p1-continued-review.md)
+- [Pi runtime integration/recall contract](docs/16-p1-live-recall.md)\n- [Integrity + human L2 Notes + controlled L4](docs/17-p1-integrity-notes-l4.md)\n- [P1 follow-on audit and proof matrix](docs/18-p1-continued-review.md)\n- [P1 Governance, Forget and Trust Gate](docs/19-p1-governance-release-gate.md)
 - [Revised P0–P4 roadmap](docs/13-verified-roadmap.md) · [P1 backlog](docs/tasks/P1-backlog.md)
 
 ## Architecture
