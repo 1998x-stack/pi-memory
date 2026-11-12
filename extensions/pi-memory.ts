@@ -7,7 +7,7 @@
  * - User data lives under <agent-dir>/memory, never in Pi package checkout.
  */
 import { createHash, randomUUID } from "node:crypto";
-import { mkdir, writeFile, rename, chmod } from "node:fs/promises";
+import { mkdir, writeFile, rename, chmod, unlink } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -57,9 +57,14 @@ async function exportDerivedNote(store:ReturnType<typeof openMemoryStore>, noteI
   const dest=join(dirname(store.databasePath),"notes",noteId+".md");
   await mkdir(dirname(dest),{recursive:true,mode:0o700});
   const temp=dest+"."+randomUUID()+".tmp";
-  await writeFile(temp,text,{encoding:"utf8",mode:0o600,flag:"wx"});
-  await rename(temp,dest);
-  try { await chmod(dest,0o600); } catch {}
+  try {
+    await writeFile(temp,text,{encoding:"utf8",mode:0o600,flag:"wx"});
+    await rename(temp,dest);
+    try { await chmod(dest,0o600); } catch {}
+  } catch(err) {
+    await unlink(temp).catch(()=>{});
+    throw err;
+  }
 }
 
 const HELP=[
@@ -199,6 +204,11 @@ export default function piMemoryExtension(pi: ExtensionAPI): void {
             if (!n) {notify("Note not found.","warning");return;}
             if (op==="export") {
               await exportDerivedNote(store,id,noteToMarkdown(n));
+              const latest=notes.get(id,scope);
+              if(!latest || latest.revision!==n.revision){
+                await unlink(join(dirname(store.databasePath),"notes",id+".md")).catch(()=>{});
+                throw new Error("Note changed or forgotten during export");
+              }
               notify("Note exported to private agent memory/notes; SQLite remains authoritative.");return;
             }
             notify(n.id+" "+n.status+" "+n.type+" rev"+n.revision+

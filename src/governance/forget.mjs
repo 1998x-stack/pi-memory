@@ -6,7 +6,7 @@
  * deletion. A hashed tombstone blocks silent re-ingestion.
  */
 import { createHash } from "node:crypto";
-import { unlink, lstat } from "node:fs/promises";
+import { unlink, lstat, readdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { assertScope } from "../store/sqlite-store.mjs";
 
@@ -59,6 +59,21 @@ export function openForgetRepository(store) {
         if(err?.code==="ENOENT")removed.push(id);
         else errors.push(id);
       }
+      // Remove orphaned atomic-export temp files after a killed Pi process.
+      try {
+        const entries=await readdir(directory);
+        const prefix=id+".md.";
+        for(const name of entries){
+          const tail=name.slice(prefix.length);
+          if(name.startsWith(prefix) &&
+             /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.tmp$/i.test(tail)){
+            const file=join(directory,name);
+            const st=await lstat(file);
+            if(st.isFile()||st.isSymbolicLink()) await unlink(file);
+            else errors.push(id);
+          }
+        }
+      }catch(err){if(err?.code!=="ENOENT")errors.push(id);}
       if(!errors.includes(id))db.prepare("DELETE FROM memory_cleanup_outbox WHERE owner_id=? AND project_id=? AND note_id=?").run(scope.ownerId,scope.projectId,id);
     }
     return {removedExports:removed.length,exportCleanupFailures:errors.length,failedNoteIds:errors};
