@@ -117,3 +117,22 @@ test("P1 scrubs known secret patterns before FTS persistence and never indexes s
     assert.equal(x.store.search("SYSTEM_SECRET_PRIVATE_DO_NOT_INDEX",scope).length,0);
   } finally {await x.cleanup();}
 });
+
+
+test("P1 FTS never returns stale source text after a native Pi same-size rewrite",async()=>{
+  const x=await setup();
+  try {
+    await ingestPiSession(x.store,x.source,x.options);
+    assert.equal(x.store.search("All 14 tests passed",scope).length,1);
+    const original=await readFile(x.source,"utf8");
+    const rewritten=original.replace("All 14 tests passed","All 99 tests passed");
+    assert.equal(rewritten.length,original.length);
+    await writeFile(x.source,rewritten);
+    // Existing FTS index has old snippet, but provenance check must hide it.
+    assert.equal(x.store.search("All 14 tests passed",scope).length,0);
+    assert.equal(x.store.search("All 99 tests passed",scope).length,0);
+    const updated=await ingestPiSession(x.store,x.source,{...x.options,forceFull:true});
+    assert.equal(updated.mode,"full");
+    assert.equal(x.store.search("All 99 tests passed",scope).length,1);
+  }finally{await x.cleanup();}
+});
