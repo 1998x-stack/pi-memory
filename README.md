@@ -2,7 +2,7 @@
 
 A local-first, evidence-grounded long-term memory extension for [Pi Coding Agent](https://github.com/earendil-works/pi), designed around four layers of memory and offline Dreaming.
 
-> **Current implementation: early P1 preview, not production-ready.** Pi Extension installation, manual session indexing, scoped FTS5 transcript search and core Pi v3 branch/compaction projection are implemented. Automatic capture, verified L2 Notes, Wiki/L3, L4 injection and Dreaming are **not implemented**.
+> **Current implementation: P1 preview, not production-ready.** Pi Package installation, scoped FTS5, source reconciliation, evidence-backed human-approved L2 Notes and opt-in metadata-only L4 are implemented. Automatic capture, Wiki/L3 and Dreaming remain **not implemented**. See [integrity & L2/L4 design](docs/17-p1-integrity-notes-l4.md).
 
 ## What works now
 
@@ -11,7 +11,7 @@ A local-first, evidence-grounded long-term memory extension for [Pi Coding Agent
 - `/pi-memory index` explicitly indexes the **current persisted session**, after project trust is granted.
 - `/pi-memory status` shows indexed event count for current project.
 - `/pi-memory search QUERY` searches previously indexed transcripts.
-- `memory_search` model Tool returns project-scoped **historical raw evidence** with session/entry provenance; not a verified recommendation.
+- `memory_search` model Tool returns project-scoped **historical raw evidence** with session/entry provenance; not a verified recommendation.\n- `/pi-memory note add/approve/revoke/export` manages human-reviewed L2 Notes linked to Pi source evidence.\n- `/pi-memory l4 on/off/preview/stats` controls bounded, metadata-only L4 context; off by default.\n- `/pi-memory reconcile/recover` handles deleted native sessions and rebuilds derived FTS5 data.
 - Parser supports Pi v3 JSONL streaming, branch lineage, compaction and context edits; SQLite FTS5 supports incremental append and full rewrite reconciliation.
 
 ## Try it in Pi
@@ -35,9 +35,22 @@ In the Pi TUI, in a project you trust:
 # The model can use the memory_search tool when tools are enabled.
 ```
 
+Manual Note workflow after indexing (replace the source IDs and Note ID with your actual values):
+
+```text
+/pi-memory note add fact <sessionId>#<entryId> | Pool timeout fix | Verify pool limits and test results
+/pi-memory note list
+/pi-memory note approve mem_<uuid>
+/pi-memory l4 on
+/pi-memory l4 preview
+/pi-memory l4 stats
+/pi-memory note revoke mem_<uuid>
+/pi-memory reconcile
+```
+
 For development from this repo root, use `pi -e ./`; `pi -ne` disables discovered extensions, while explicit `-e` may still load one. The Extension never scans projects or calls a model automatically.
 
-**Privacy warning:** This P1 preview indexes on explicit user request and performs best-effort secret-pattern redaction. This is **not complete DLP**. No end-user forget/purge UI has been implemented yet. Use synthetic or non-sensitive data until deletion and security hardening are complete.
+**Privacy warning:** This P1 preview indexes on explicit user request and performs best-effort secret-pattern redaction. This is **not complete DLP**. Revocation excludes Notes from L4, but end-user hard forget/purge (including native JSONL, SQLite backups and derived Markdown) has not been implemented yet. Use synthetic or non-sensitive data until deletion and security hardening are complete.
 
 ## Storage and boundaries
 
@@ -53,7 +66,7 @@ For development from this repo root, use `pi -e ./`; `pi -ne` disables discovere
 - [P0 upstream/install audit](docs/10-upstream-audit.md) · [Test results](docs/qa/install-results.md)
 - [P1 parser and provenance](docs/14-p1-parser-foundation.md)
 - [P1 scoped FTS indexer](docs/15-p1-indexer-fts.md)
-- [Pi runtime integration/recall contract](docs/16-p1-live-recall.md)
+- [Pi runtime integration/recall contract](docs/16-p1-live-recall.md)\n- [Integrity + human L2 Notes + controlled L4](docs/17-p1-integrity-notes-l4.md)
 - [Revised P0–P4 roadmap](docs/13-verified-roadmap.md) · [P1 backlog](docs/tasks/P1-backlog.md)
 
 ## Architecture
@@ -69,7 +82,7 @@ Stable canonical source IDs + pre-index redaction
     ↓
 SQLite FTS5 (rebuildable) → project-scoped transcript hits
 
-Future: L2 verified Notes → Dreaming/Changesets/Snapshots → L3 Wiki → L4 context
+L2 human-approved Notes → metadata-only L4 section (opt-in)\nFuture: Dreaming/Changesets/Snapshots → L3 Wiki → richer task-aware L4
 ```
 
 **Status discipline:** passing Pi RPC and model-free FTS tests is not a G1 release. Work remains for automatic catch-up, full lineage journaling, Notes approval, L4 budgeting, fault/recovery testing and cross-platform compatibility.

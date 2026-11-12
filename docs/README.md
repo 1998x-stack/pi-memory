@@ -1,6 +1,6 @@
 # Documentation hub / 文档导航
 
-> 状态：**P1 early preview 已有真实 Pi Git/local Package RPC 加载、手工 Index、跨 Session FTS5 检索测试**。自动采集、L2/L3/L4 与 Dreaming 尚未实现；G0/G1 完整验收仍待补齐。
+> 状态：**P1 early preview 已有真实 Pi Git/local Package RPC 加载、手工 Index、跨 Session FTS5 检索测试**。自动采集、L3 Wiki 与 Dreaming 尚未实现；L2 手工 Notes 和 L4 metadata-only preview 已有代码，但 G0/G1 完整验收仍待补齐。
 
 ## 上游复核、安装与 QA（先读）
 
@@ -15,7 +15,7 @@
 
 - [P1 Parser + Branch/Compaction Projection](14-p1-parser-foundation.md)
 - [P1 SQLite FTS5 + 增量索引](15-p1-indexer-fts.md)
-- [P1 真实 Pi Runtime Recall 接入](16-p1-live-recall.md)
+- [P1 真实 Pi Runtime Recall 接入](16-p1-live-recall.md)\n- [P1 数据完整性、L2 Notes 和 L4 安全注入](17-p1-integrity-notes-l4.md)
 - [GitHub Actions 结果与剩余 Gate](qa/install-results.md)
 
 ## 总体设计
