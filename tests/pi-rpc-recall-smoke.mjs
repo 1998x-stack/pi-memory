@@ -135,7 +135,7 @@ try {
       await new Promise(resolveTimeout=>setTimeout(resolveTimeout,15));
     }
     assert.ok(notifications.slice(notificationsBeforeRevokeSearch)
-      .some(message=>message.includes("No matching indexed evidence")),
+      .some(message=>/No matching (?:historical entries|indexed evidence)/.test(message)),
       "Revoked note must not resolve from a copied L4 pointer");
   }finally{store.close();}
   process.stdout.write("PASS real Pi RPC cross-session FTS memory recall, no model call\n");
