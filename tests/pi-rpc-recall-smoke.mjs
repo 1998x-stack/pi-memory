@@ -107,6 +107,10 @@ try {
     const approved=await request("prompt",{message:"/pi-memory note approve "+id});
     assert.equal(approved.disposition,"handled");
     assert.equal(notes.get(id,scope).status,"verified");
+    const opened=await request("prompt",{message:"/pi-memory search "+id});
+    assert.equal(opened.disposition,"handled");
+    assert.ok(notifications.some(n=>n.includes("Approved Note "+id) && n.includes("rpc-p1-recall#t2")),
+      "L4 pointer should resolve to lower-trust Note details with provenance");
     await request("prompt",{message:"/pi-memory l4 on"});
     const l4=openL4Controller(store);
     const index=l4.render(scope);
@@ -122,6 +126,9 @@ try {
     assert.equal(revoke.disposition,"handled");
     assert.equal(notes.get(id,scope).status,"revoked");
     assert.equal(l4.render(scope).count,0,"revoked Note must disappear from L4 immediately");
+    await request("prompt",{message:"/pi-memory search "+id});
+    assert.ok(notifications.at(-1).includes("No matching indexed evidence"),
+      "Revoked note must not resolve from a copied L4 pointer");
   }finally{store.close();}
   process.stdout.write("PASS real Pi RPC cross-session FTS memory recall, no model call\n");
 }finally{
