@@ -21,6 +21,12 @@ export async function reconcileMissingSessions(store, options) {
       missing.push(session); continue;
     }
     try {
+      const current = await realpath(session.source_file);
+      const nowRel = relative(root,current);
+      if (current !== session.source_file || nowRel === ".." || nowRel.startsWith(".." + sep) || isAbsolute(nowRel)) {
+        missing.push(session);
+        continue;
+      }
       const file = await stat(session.source_file);
       if (!file.isFile()) missing.push(session);
     } catch(e) {

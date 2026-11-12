@@ -3,7 +3,7 @@
  * node:sqlite is currently experimental on Node 22; verify host compatibility.
  */
 import { DatabaseSync } from "node:sqlite";
-import { mkdirSync, chmodSync, statSync } from "node:fs";
+import { mkdirSync, chmodSync, statSync, realpathSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { homedir } from "node:os";
 
@@ -159,7 +159,7 @@ export function openMemoryStore(databasePath = defaultMemoryDatabasePath()) {
       ).all(match,scope.ownerId,scope.projectId,bounded);
       // Fail closed on missing native Pi sources even before scheduled reconciliation.
       return rows.filter(r => {
-        try { return statSync(r.source_file).isFile(); } catch { return false; }
+        try { return statSync(r.source_file).isFile() && realpathSync(r.source_file) === r.source_file; } catch { return false; }
       }).map(r => ({
         id:r.id,sourceNamespace:r.source_namespace,sessionId:r.session_id,
         entryId:r.entry_id,layer:"transcript",status:"raw",
