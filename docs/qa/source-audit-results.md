@@ -12,7 +12,7 @@ As of 2026-11-12, upstream source was reviewed at Pi [a40abeca](https://github.c
 | Scoped FTS incremental append/rewrite/redaction baseline | deterministic CI tests passed |
 | Git update/remove avoids deleting outside-checkout private data | **PASS on Linux** |
 | Project trust refusal/TUI/print/Windows/Bun/native integrations | **NOT RUN** |
-| True human-approved L2, L3 Wiki, L4 and Dreaming | **NOT IMPLEMENTED** |
+| Human-approved L2 and L4 metadata-only pointers | **IMPLEMENTED IN P1 PROTOTYPE**, Pi SDK Hook CI verified |\n| L3 Wiki and Dreaming | **NOT IMPLEMENTED** |
 | Real coding task success & independent security audit | **NOT RUN** |
 
 Latest [all-green P0/P1 integration and projection differential run](https://github.com/1998x-stack/pi-memory/actions/runs/43144372252).\n\nCI references: [source+Git loader](https://github.com/1998x-stack/pi-memory/actions/runs/43143058406), [P1 parser/SQLite](https://github.com/1998x-stack/pi-memory/actions/runs/43143783323), [new-session recall](https://github.com/1998x-stack/pi-memory/actions/runs/43144014841), [disable/update/remove](https://github.com/1998x-stack/pi-memory/actions/runs/43144184617).
@@ -24,7 +24,7 @@ Latest [all-green P0/P1 integration and projection differential run](https://git
 - SQLite FTS5 is based on `node:sqlite`, experimental in Node22; no cross-platform ABI assurance yet.
 - The current read path does not automatically revoke records after deleted native sessions; source deletion reconciliation is future work.
 - Known-pattern secret redaction is **not complete DLP**.
-- Multiple processes can compete for the same DB/session; the lease and bounded recovery plan remains a release blocker.
+- SQLite BEGIN IMMEDIATE + checkpoint CAS protect stale concurrent writers; broader multi-process stress, recovery retries and crash windows remain release blockers.
 - `memory_search` yields unverified historical source text, NOT permission to elevate instructions or verified facts.
 
 ## Review discipline

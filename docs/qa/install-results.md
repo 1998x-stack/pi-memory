@@ -2,6 +2,14 @@
 
 Review date: 2026-11-12. The results below are **real GitHub Actions executions** on Linux, Node 22.19.0 and `@earendil-works/pi-coding-agent@1.5.2`. Do not generalize these results to all operating systems or Pi releases.
 
+## Continued P1 implementation evidence
+
+- [Pi SDK L4 Hook run 43147497338](https://github.com/1998x-stack/pi-memory/actions/runs/43147497338): all jobs passed, including offline Pi 1.5.2 `before_agent_start` integration and project-scoped Note ID injection without title/body.
+- [SIGKILL WAL recovery run 43147564344](https://github.com/1998x-stack/pi-memory/actions/runs/43147564344): all jobs passed, including crash rollback, FTS integrity and reconnect.
+- [L4 token/cache usage parser run 43147636731](https://github.com/1998x-stack/pi-memory/actions/runs/43147636731): all jobs passed; analyzes numeric Pi usage records without exposing prompt contents.
+- [L4 Note ID retrieval run 43147705782](https://github.com/1998x-stack/pi-memory/actions/runs/43147705782): model-free tests confirmed only approved Notes are retrievable by ID with Evidence, and revoked/foreign Notes are hidden.
+- [Latest full command/revocation integration](https://github.com/1998x-stack/pi-memory/actions/runs/43147969626): final workflow status should be checked in Actions; do not infer pass from the link alone.
+
 ## Executed evidence
 
 | Verification | Status | Evidence |
@@ -17,7 +25,7 @@ Review date: 2026-11-12. The results below are **real GitHub Actions executions*
 | P0 project trust negative case and local permanent install | NOT RUN | I03/I04 |
 | Reload/TUI/print/JSON stdout safety, alternate OS/Bun | NOT RUN | I06–I11/I16 |
 | Corruption and process crash recovery, concurrent writers | NOT RUN | P1/P4 fault matrix |
-| Automatic Notes, L4, Dreaming, Wiki and long-horizon eval | NOT IMPLEMENTED | P1-08/P1-09, P2–P4 |
+| Auto-extracted Notes, Dreaming, Wiki and long-horizon eval | NOT IMPLEMENTED | P2–P4; manual L2 + opt-in L4 implemented in P1 |
 
 ## Latest all-green CI
 
@@ -37,7 +45,7 @@ Review date: 2026-11-12. The results below are **real GitHub Actions executions*
 ## Gate interpretation
 
 - **G0 partially verified:** install, Git lifecycle and disable succeeded on one pinned Linux/Node/Pi combination. Project trust, reload and broader platform cases remain.
-- **G1 partially implemented/tested:** read-only sources and scoped retrieval work. Manual Notes, L4 and more robust fault/privacy controls remain.
+- **G1 partially implemented/tested:** L1 ingestion/reconciliation/CAS/WAL, human-approved L2 Notes, verified-only L4 pointer injection and offline cache accounting are implemented/tested. Hard purge, broad Pi trust/platform matrix, cache experiment and automated capture remain.
 - **G2–G4 not started in executable code.**
 
 Use [install-test-matrix.md](install-test-matrix.md) for remaining tests; only mark a case pass after its actual logs exist.
