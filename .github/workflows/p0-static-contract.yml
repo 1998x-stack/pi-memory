@@ -47,6 +47,8 @@ jobs:
         run: node tests/pi-rpc-recall-smoke.mjs
       - name: Differential-test projection vs installed Pi SDK
         run: node tests/pi-projection-diff.mjs
+      - name: Verify L4 before_agent_start against real Pi SDK (no model API)
+        run: node tests/pi-l4-sdk-hook-smoke.mjs
 
   pi-rpc-git-install:
     runs-on: ubuntu-latest
