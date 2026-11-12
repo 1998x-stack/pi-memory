@@ -1,6 +1,6 @@
 /**
  * No-model Pi RPC trust-negative proof: a globally/CLI loaded Extension cannot
- * create or read derived memory when Pi marks the project untrusted.
+ * create or read derived memory when Pi marks the project untrusted.\n * Pi auto-trusts projects with no trust-requiring resources, so the explicit\n * --no-approve override is essential for this negative test.
  */
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
@@ -14,7 +14,7 @@ await writeFile(join(agentDir,"settings.json"),JSON.stringify({defaultProjectTru
 let child;
 let done=Promise.resolve();
 try{
-  child=spawn("pi",["--mode","rpc","--no-session","-ne","-e",cwd],{
+  child=spawn("pi",["--mode","rpc","--no-session","--no-approve","-ne","-e",cwd],{
     cwd,env:{...process.env,PI_CODING_AGENT_DIR:agentDir,CI:"true",NO_COLOR:"1"},
     stdio:["pipe","pipe","pipe"]
   });
