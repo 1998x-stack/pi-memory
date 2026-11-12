@@ -25,9 +25,9 @@ test("host modules are never bundled as runtime dependencies", async () => {
   assert.equal(manifest.peerDependencies["@earendil-works/pi-coding-agent"], "*");
 });
 
-test("probe does not impersonate a completed memory feature", async () => {
+test("Pi Extension exposes manually scoped P1 search but no automatic capture", async () => {
   const text = await readFile(join(root, "extensions/pi-memory.ts"), "utf8");
-  assert.match(text, /export default function piMemoryInstallProbe/);
+  assert.match(text, /export default function piMemoryExtension/);
   assert.match(text, /registerCommand\("pi-memory-doctor"/);
   assert.match(text, /NOT implemented/);
   assert.doesNotMatch(text, /registerTool\(/);

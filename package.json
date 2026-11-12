@@ -2,7 +2,7 @@
   "name": "pi-memory",
   "version": "0.0.0",
   "private": true,
-  "description": "P0 install probe plus Pi-session parsing foundation; Memory Engine is not complete",
+  "description": "Pi Memory P1 manual session indexing and scoped historical recall; L2/Dreaming/Wiki pending",
   "type": "module",
   "keywords": [
     "pi-package",
@@ -13,7 +13,8 @@
     "node": ">=22.19.0"
   },
   "peerDependencies": {
-    "@earendil-works/pi-coding-agent": "*"
+    "@earendil-works/pi-coding-agent": "*",
+    "typebox": "*"
   },
   "pi": {
     "extensions": [
