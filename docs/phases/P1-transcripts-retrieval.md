@@ -4,7 +4,7 @@
 
 ## 0. Entry / Exit
 
-**Entry**：已确定 Pi 依赖版本、Node 运行环境、项目身份规则；已准备合法/异常 JSONL fixture。
+**Entry**：**真实 Pi 的 G0 安装验收通过**，已确定 Pi 依赖版本、Node 运行环境、项目身份规则；已准备合法/异常 JSONL fixture。
 
 **Exit G1**：
 - 新 Session（与旧 Session 不同）`memory_search` 可靠地返回 old Session/entry references；
@@ -41,7 +41,7 @@
 
 ### P1-05 — Incremental indexer and ingestion state
 
-**Implementation**：`src/transcripts/indexer.ts`、`src/store/migrations/001_init.sql`、`src/store/ingestion.ts`。缓存合法 JSONL 行的 offset/mtime/size；文件变化导致 reconciliation；SQLite WAL + busy timeout；`events` upsert key 幂等；DB transaction 包括 offset 更新；安全处理文件重命名、删除、半行。
+**Implementation**：`src/transcripts/indexer.ts`、`src/store/migrations/001_init.sql`、`src/store/ingestion.ts`。缓存合法 JSONL 行的 offset/mtime/size；文件变化导致 reconciliation；SQLite WAL + busy timeout；`events` 使用 `(source_namespace,session_id,entry_id)` 稳定 upsert key（禁止 whole-file hash）幂等；DB transaction 包括 offset 更新；安全处理文件重命名、删除、半行。
 
 **Acceptance**：相同 Session index 两次无重复；异常中断重试得到同样索引；并行 index 不丢数据；删除后孤儿事件有状态。
 
@@ -65,7 +65,7 @@
 
 ### P1-09 — Pi Extension Tool & bounded L4
 
-**Implementation**：`src/extension/index.ts`、`tools.ts`、`hooks.ts`。注册 `memory_search`；`before_agent_start` 注入小型固定 `MEMORY.md`（仅已批准内容），设置 `sections.pi_memory`；`session_start` 绑定项目；`agent_settled` enqueue 索引任务；无证据不得动态推广；按配置注入 Token 上限（建议首版≤600–1200）。
+**Implementation**：`src/extension/index.ts`、`tools.ts`、`hooks.ts`。注册 `memory_search`；`before_agent_start` 注入小型固定 `MEMORY.md` **非指令性的已批准导航索引**，设置 `sections.pi_memory`；`session_start` 绑定项目；`agent_settled` enqueue 索引任务（保留 aborted，不能宣称任务成功），`session_start`/CLI 扫描漏记 historical JSONL；无证据不得动态推广；按配置注入 Token 上限（建议首版≤600–1200）。
 
 **Acceptance**：同进程跨 `/new` 仍找到旧记忆；其他 extension 的 prompt sections 不被覆盖；异常时 fail open；Tool cancellation 有效；无 UI 模式不弹窗。
 
@@ -112,3 +112,13 @@ pi session writes JSONL
 If timeline is tight: CLI search before TUI, only FTS (no embeddings), manual Notes before auto extraction, minimal L4 index before dynamic selector. **Do not cut branch correctness or scope filtering.**
 
 Next: [P2](P2-capture-dreaming.md).
+
+## G1 Pi-source audit additions
+
+- 新增 transient `branch()` leaf 测试：`session_tree` 事件 journal 和后台 JSONL 文件推断需要分开标识 observed/inferred。
+- 新增 host Package 安装回归：以 P0 Git/local probe 方式加载已实现的 `memory_search`，检查 `--no-tools`, codemode-only, `/reload`。
+- 新增 stable event key 测试：JSONL 追加、Pi 迁移重写、fork 后不生成重复来源。
+- 新增独立 private data root/项目 trust opt-in 测试：在 untrusted cwd/global install 不能扫描项目日志。
+- 新增 `nestedCalls`、parallel tool 顺序、ephemeral/no session file、aborted run、catch-up after restart。
+
+Blocking matrix: [Runtime Lifecycle](../12-runtime-lifecycle-matrix.md).

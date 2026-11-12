@@ -41,7 +41,7 @@
 
 ### P3-05 — Task-aware context selection & budgeting
 
-**Implementation**：`src/injection/context-selector.ts`、`budget.ts`。L4 用“稳定 Index + 少量动态 verified facts”；输入当前 task、scope、memory importance、freshness、reuse count、token budget；做去重与截断，并返回 `selected_ids` 和拒绝原因。
+**Implementation**：`src/injection/context-selector.ts`、`budget.ts`。先限制 system prompt L4 为审核过的稳定导航元数据；动态事实默认走 `memory_search`，自动注入需要检查缓存/Compaction/重复与信任边界。L4 用“稳定 Index + 少量动态 verified facts”；输入当前 task、scope、memory importance、freshness、reuse count、token budget；做去重与截断，并返回 `selected_ids` 和拒绝原因。
 
 **Acceptance**：模型在新 Session 至少知道 Memory 工具与关键规则；Token 不超过配置；候选/过时/撤回 Note 绝不注入。
 
@@ -106,3 +106,9 @@ priority =
 - Task prompt changing each run doesn't cause avoidable full system-prompt churn.
 
 Task-by-task: [P3 Backlog](../tasks/P3-backlog.md). Next: [P4](P4-evaluation-release.md).
+
+## G3 source-audit additions
+
+- 高信任位置不能直接放 Tool Result/网页引文等不可信内容；Verified 只表示有证据，不提升 instruction 权限。
+- 在 Pi `before_agent_start` 改写 system prompt sections 会生成 patch 并影响 cache，必须测长期运行时多次变更与 `context` hook 组合。
+- `--no-tools` 或 codemode-only 时动态 Memory Tool 可能不可见；系统必须安全退化。

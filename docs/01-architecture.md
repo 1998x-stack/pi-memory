@@ -1,3 +1,5 @@
+> **上游复核前置约束**：先完成 [P0 Pi 安装 Gate](phases/P0-install-contract.md)；Pi Git 更新可能清理安装目录，数据必须存在其外。L4 P1 只注入审核过的非指令性导航信息，实际任务记忆优先用低信任 `memory_search` 工具。完整问题清单见 [源码审计](10-upstream-audit.md)。
+
 # System architecture — Pi Memory
 
 ## 1. Context & decision
@@ -69,9 +71,9 @@ flowchart TD
 ## 5. Online sequence
 
 1. `session_start`：定位当前 `cwd`/Project ID，读取最新 *已批准* Snapshot 版本（无则为空）。
-2. `before_agent_start`：选择 300–600 tokens 稳定索引；若有任务检索策略，可在预算内注入 1–3 条 verified 记忆；不进行深度 Dreaming。
+2. `before_agent_start`：P1 只注入 300–600 tokens 的稳定、已批准且**非指令性导航索引**；详细事实默认 Tool Retrieval。P3 可以研究带引用的动态注入，但必须评测信任边界/缓存成本；不进行 Dreaming。
 3. Agent Loop：模型需要历史证据时调用 `memory_search`，结果返回来源、状态、适用条件，默认不把候选当事实。
-4. `agent_settled`：只把 `(session_id, leaf_id, source_file, checkpoint)` 写入持久化 ingestion queue；不要在 Hook 中执行慢推理。
+4. `agent_settled`：只把 `(session_id, leaf_id, source_file, checkpoint, outcome)` 写入持久化 ingestion queue（含 aborted，但不能自动视为任务成功）；`session_start`/CLI 还要对漏记的历史做 catch-up；不要在 Hook 中执行慢推理。
 5. Worker：解析 JSONL、索引新事件、提炼候选（P2）、检查证据、生成待审核内容；下一 Session 才能使用批准的新 Snapshot。
 
 ## 6. Offline Dreaming sequence

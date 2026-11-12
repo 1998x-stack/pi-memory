@@ -1,0 +1,26 @@
+{
+  "name": "pi-memory",
+  "version": "0.0.0",
+  "private": true,
+  "description": "P0 install-only probe for Pi; long-term memory engine is not implemented yet",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "agent-memory"
+  ],
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions/pi-memory.ts"
+    ]
+  },
+  "scripts": {
+    "test": "node --test tests/installation-manifest.test.mjs"
+  }
+}

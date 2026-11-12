@@ -1,0 +1,31 @@
+name: P0 static Pi package contract
+
+on:
+  push:
+    paths:
+      - "package.json"
+      - "extensions/**"
+      - "tests/installation-manifest.test.mjs"
+      - ".github/workflows/p0-static-contract.yml"
+  pull_request:
+    paths:
+      - "package.json"
+      - "extensions/**"
+      - "tests/installation-manifest.test.mjs"
+      - ".github/workflows/p0-static-contract.yml"
+
+jobs:
+  manifest-and-pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.19.0"
+      - name: Test source Pi manifest contract (NOT a live Pi runtime test)
+        run: npm test
+      - name: Check npm pack asset list
+        run: npm pack --dry-run --json --ignore-scripts > /tmp/pi-memory-pack.json
+      - name: Assert the Pi TypeScript entrypoint is in the npm artifact
+        run: |
+          node -e 'const fs=require("fs"); const a=JSON.parse(fs.readFileSync("/tmp/pi-memory-pack.json","utf8")); if(!a[0].files.some(f=>f.path==="extensions/pi-memory.ts")) process.exit(1)'

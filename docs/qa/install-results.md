@@ -1,0 +1,23 @@
+# P0 actual Pi install results (not yet run)
+
+**Current status: NOT RUN ON A LIVE PI RUNTIME**.
+
+## Environment blocker
+
+The review environment has Node **22.16.0** and no `pi` CLI available. Pi's reviewed package declares Node **>=22.19.0**. Network/installation access is unavailable in the review container. The submitted P0 test and CI workflow check the *static package contract*, not extension loading inside Pi.
+
+## Required actual test record
+
+| Case | Status | Pi version / OS | Evidence |
+|---|---|---|---|
+| I01: local -e | not_run | — | — |
+| I02: Git user install | not_run | — | — |
+| I03: project trust | not_run | — | — |
+| I04: local permanent | not_run | — | — |
+| I05–I11: disable/filter/reload/modes | not_run | — | — |
+| I12–I17: update/remove/cross-platform | not_run | — | — |
+| I18: npm published | not_applicable (P4) | — | — |
+
+**Do not mark G0 passed** until a compatible Pi runtime has executed I01/I02/I03 plus the critical trust/disable/state isolation checks and logged the observations.
+
+Instructions: [P0 execution plan](../phases/P0-install-contract.md), [full test matrix](install-test-matrix.md).

@@ -1,12 +1,13 @@
 # Implementation roadmap — P1 through P4
 
-> 所有阶段是规划，不代表代码已经完成。建议按 *验收门槛* 而非日历时间推进；禁止“写完文件即算完成”。
+> **G0 是新增硬前提**：源码 Manifest 与 install probe 已提交，但真实 Pi 安装测试尚未执行。P1–P4 仍是规划。建议按 *验收门槛* 而非日历时间推进；禁止“写完文件即算完成”。
 
 ## 1. Dependency graph
 
 ```mermaid
 flowchart LR
-  A["P1: Pi session indexing + manual notes + recall"] --> B["P2: verified extraction + Dreaming + snapshots"]
+  Z["P0: Pi install + trust + compatibility"] --> A["P1: Pi session indexing + manual notes + recall"]
+  A --> B["P2: verified extraction + Dreaming + snapshots"]
   B --> C["P3: wiki and task-aware L4"]
   C --> D["P4: long-horizon evaluation + release"]
   A --> E["Shared: schemas, fixtures, privacy"]
@@ -18,7 +19,8 @@ flowchart LR
 ## 2. Phase deliverables and gates
 
 | Phase | 交付价值 | 核心任务 ID | 最小演示 | 退出条件 |
-|---|---|---|---|---|
+|---|---|---|---|
+| P0 | Package 通过 Pi 安装与禁用 | P0-01..06 | `/pi-memory-doctor` | Git/local + trust + reload/update/remove 真实 smoke |
 | P1 | 新 Session 能查旧事实 | P1-01..P1-10 | 修复一个 Bug、new session 检索 Evidence | Session 分支/压缩正确、FTS、手工 Note、L4、集成测试 |
 | P2 | 能从经验中提炼并纠错 | P2-01..P2-10 | 旧错误 Note 被新证据纠正，diff 后发布 | 一次 Dreaming 可回滚、有证据审核、有幂等作业 |
 | P3 | 多事件变为知识导航 | P3-01..P3-09 | 多次故障聚合成 Wiki，按需检索+注入 | Wiki 链接完整、污染可阻断、过期上下文可下线 |
@@ -26,7 +28,9 @@ flowchart LR
 
 ## 3. Start and stop rules
 
-**P1 Entry**：空仓库文档基线完成、确定 Pi pinned version、Node 运行环境和最低 schema。
+**P0 Exit (G0)**：真实 Pi Git/local 安装探针通过；项目 trust、关闭扩展、Reload、卸载、Git 更新数据隔离经过测试并有日志。静态 Manifest 不等于安装通过。
+
+**P1 Entry**：G0 通过，空仓库文档基线完成、确定 Pi pinned version、Node 运行环境和最低 schema。
 
 **P1 Exit (G1)**：
 - 能导入 Pi v3 JSONL golden fixtures，包括 tool calls、compaction、fork/tree/context_edit；
@@ -59,6 +63,7 @@ flowchart LR
 
 ## 5. Recommended PR slicing
 
+- PR 0: G0 Pi Package source manifest + real Pi install/trust tests.
 - PR 1: repo baseline, CI, TypeScript, test fixtures.
 - PR 2: JSONL parser + branch-aware SourceRef.
 - PR 3: SQLite FTS index + idempotent ingestion.

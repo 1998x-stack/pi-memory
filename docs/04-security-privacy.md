@@ -6,7 +6,7 @@
 
 **Adversaries/failures**：不可信代码仓库、网页、Tool Result、README 注入；错误推理；同机不同项目的意外越权；恶意扩展；损坏/删除源文件；被污染的旧版本 Snapshot；多人并发与误配置。
 
-Pi extensions 与 Pi 进程共享操作系统权限，因此必须由用户明确信任安装来源。Project-local extension 必须经过 Pi 的 project trust；不能把“安装了扩展”当成默认安全。
+Pi extensions 与 Pi 进程共享操作系统权限，因此必须由用户明确信任安装来源。Project-local extension 必须经过 Pi 的 project trust；**user/global extension 在 untrusted 项目也可能加载**，因此不能把安装当作项目扫描授权。自动捕获默认需要项目 opt-in 和 `ctx.isProjectTrusted()`。
 
 ## 2. Threat → mitigation → test
 
@@ -32,7 +32,7 @@ Pi extensions 与 Pi 进程共享操作系统权限，因此必须由用户明�
 ## 4. Prompt trust policy
 
 - `AGENTS.md` 的人类指令和 `MEMORY.md` 生成内容从来源上区分；Memory 不能修改系统/开发者指令。
-- L4 只注入带引用的项目事实，避免“必须忽略安全检查”等命令式内容。
+- P1 的 L4 System Prompt 段只注入已审核、非指令性的导航索引；原始事实片段用低信任 Tool 返回。验证过的记忆不等于更高优先级指令。
 - Prompt injection 检测不能只靠正则；基于来源信任、工具用途、白名单验证任务和人工审查。
 - Retrieval 返回原样 excerpt 时必须加 untrusted delimiter/context，不能当更高优先级指令。
 - LLM 自我声明“证据已验证”不能代替代码层的来源检查。

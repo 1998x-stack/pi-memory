@@ -1,10 +1,12 @@
+> **重要修订**：原 dist 入口不能在没有 build 产物的 Git checkout 中加载。当前根 package 的真实 Pi Extension 入口为 `extensions/pi-memory.ts`（仅 P0 doctor）。见 [安装源码复核](11-installation-and-packaging.md)；以下 Engine 示例仍是**拟实现**。
+
 # Pi Extension integration — verified API surface and plan
 
 > 依据 Pi 当前仓库 `packages/coding-agent/docs/extensions.md`、`session-format.md`、`compaction.md`、`examples/extensions/prompt-customizer.ts`、`summarize.ts`。上游接口可能变化；实现时必须 pin Pi 版本并运行契约测试。
 
 ## 1. Packaging strategy
 
-独立 npm/Git Pi Package，入口 `src/extension/index.ts`，非 fork。Pi 会自动发现全局 `~/.pi/agent/extensions/`、项目 `.pi/extensions/` 或安装的 package；开发期可用 `pi -e ./src/extension/index.ts` 验证。项目扩展仅在项目获信任后加载；第三方扩展具有当前进程权限，必须审查来源。
+独立 npm/Git Pi Package，**当前安装入口 `extensions/pi-memory.ts`**；未来 P1 Engine 可以放 `src/*`，但 manifest 指向的文件必须随 Git/npm 源发布，不能虚构 `dist`。非 fork。Pi 会自动发现全局 `~/.pi/agent/extensions/`、项目 `.pi/extensions/` 或安装的 package；开发期可用 `pi -e ./src/extension/index.ts` 验证。项目扩展仅在项目获信任后加载；第三方扩展具有当前进程权限，必须审查来源。
 
 示例 package manifest（最终以 Pi 包文档与发布环境测试为准）：
 
@@ -13,7 +15,8 @@
   "name": "pi-memory",
   "private": true,
   "type": "module",
-  "pi": { "extensions": ["./dist/extension/index.js"] }
+  "peerDependencies": { "@earendil-works/pi-coding-agent": "*" },
+  "pi": { "extensions": ["./extensions/pi-memory.ts"] }
 }
 ```
 
@@ -42,7 +45,7 @@ import { Type } from "typebox";
 import { openEngine } from "../core/engine.js";
 
 export default function (pi: ExtensionAPI) {
-  const engine = openEngine(); // lazy init; no long-lived timers here
+  const engine = openEngine(); // proposed API; lazy, no timers; fail-open policy required
 
   pi.on("before_agent_start", async (event, ctx) => {
     const text = await engine.inject({
@@ -73,7 +76,7 @@ export default function (pi: ExtensionAPI) {
 
   pi.on("agent_settled", async (event, ctx) => {
     const file = ctx.sessionManager.getSessionFile();
-    if (!file) return;
+    if (!file) return; // in-memory/ephemeral session: explicit safe skip policy
     await engine.enqueue({
       sessionFile: file,
       sessionId: ctx.sessionManager.getSessionId(),
@@ -101,7 +104,7 @@ export default function (pi: ExtensionAPI) {
 
 ### Branch correctness contract
 
-- 原始事件唯一键：`source_file_hash + session_id + entry_id`（实现可用规范化稳定路径/文件标识）。
+- 原始事件稳定键：`source_namespace + session_id + entry_id`；文件内容 hash 与 `entry_hash` 单独用于完整性校验。Pi JSONL 可追加/迁移重写，完整文件 hash 不能当主键。
 - 分支是 `(session_id, leaf_id)`，Parent 链遍历要检测环、缺失父节点和多根。
 - 索引所有合法 raw entries；生成“本次行动的事实”须明确使用活动 leaf 和对应因果范围。
 - `/fork` 生成新 session 时保留 `parentSession` 链接，不默认为同一个 session。
@@ -134,3 +137,13 @@ export default function (pi: ExtensionAPI) {
 7. TUI、RPC、headless 无 UI 时不调用需交互的确认接口。
 
 See [P1 tasks](tasks/P1-backlog.md) and [official extension docs](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/extensions.md).
+
+## Audit addendum: Pi-specific implementation traps
+
+- `branch()` 可以只修改内存 leaf，`session_tree` 应记录实际选择；JSONL 重读只能推断最后持久化 entry 的 leaf。
+- `agent_settled` 不是成功判据，aborted 和错误执行仍需保存来源但不能验证为成功。
+- Global Extension 可能在项目未 trust 时运行：自动捕获必须 opt-in 并检查 `ctx.isProjectTrusted()`。
+- `session_start`/CLI catch-up 修复 missed settled；Git checkout 更新会运行 `git clean -fdx`，禁止存放用户数据。
+- `pi.registerTool` 可指定 `promptSnippet`；`--no-tools`/codemode selection 仍可能隐藏 tool。
+- 后台 Worker 无法复用退出 Pi 进程里的 `ctx.modelRegistry`；需要独立认证上下文。
+- 测试标准见 [Runtime matrix](12-runtime-lifecycle-matrix.md) 和 [Install QA](qa/install-test-matrix.md)。

@@ -40,3 +40,7 @@ Pi Extension cannot provide a needed event or SessionManager semantics; performa
 ## Evidence
 
 [Pi extension documentation](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/extensions.md), [Pi package documentation](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/packages.md).
+
+## Install gate amendment (2026-11-12)
+
+当前仓库真实入口为 `extensions/pi-memory.ts`，是 P0 `pi-memory-doctor` 探针，不是 Memory Engine。Git 包不能指向不存在的 `dist/`；代码、依赖、私有数据目录和 Pi 进程生命周期必须分别验证。查看 [Package contract](../11-installation-and-packaging.md)。

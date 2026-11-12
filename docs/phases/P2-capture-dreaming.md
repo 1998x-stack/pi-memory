@@ -66,7 +66,7 @@
 
 ### P2-09 — Drift/forget propagation and reconciliation
 
-**Implementation**：`src/governance/stale.ts`、`forget.ts`。监控证据文件消失、环境/配置变化、手动撤回；更新 Notes status、检索索引、注入候选。`forget` 提供 impacted set dry-run，再执行派生数据撤回；Pi raw JSONL 删除需单独明确授权。
+**Implementation**：`src/governance/stale.ts`、`forget.ts`。删除语义必须区分 hide/forget-derived/purge-source，并在未来 reindex 时用 tombstone 阻止复活。监控证据文件消失、环境/配置变化、手动撤回；更新 Notes status、检索索引、注入候选。`forget` 提供 impacted set dry-run，再执行派生数据撤回；Pi raw JSONL 删除需单独明确授权。
 
 **Acceptance**：源证据删除后该 Note 不继续被 L4 当 verified；旧 Snapshot 查询仍需生效 tombstone。
 
@@ -116,3 +116,10 @@ else:
 P2 可先用一个模型、一个项目、人工点击 publish；不要先做 scheduler UI、agent swarm 或云端数据库。**不能删掉 evidence checking、diff/rollback 这三个关键能力。**
 
 Task-by-task: [P2 Backlog](../tasks/P2-backlog.md). Next: [P3 Wiki](P3-wiki-injection.md).
+
+## G2 source-audit additions
+
+- Standalone Worker model credential resolution and explicit remote-model consent are release-blocking.
+- `revoke` + `rollback` + `reindex` must not resurrect forgotten data.
+- Source branch for each extracted claim must be observed or qualified as inferred; model narration is not proof.
+- Publish across SQLite/files requires journal reconciliation, not an assumed single atomic transaction.

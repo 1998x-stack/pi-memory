@@ -2,7 +2,7 @@
 
 ## 1. Runtime modes
 
-- `Extension`：低延迟、无必要长期守护进程，读取已批准 Snapshot，提供 Tools。
+- `Extension`：Git Source Package 安装后从源 TS 入口加载；低延迟、无必要长期守护进程，读取已批准 Snapshot，提供 Tools。
 - `index`：纯本地可重建任务，支持按文件 offset 增量扫描和全量 rebuild。
 - `worker`：离线候选提炼与 Dreaming，可显式 CLI 或外部调度运行。
 - `review/publish`：用户审查 Changeset 并原子提交新 Snapshot；不在 hot path。
@@ -101,3 +101,11 @@ privacy:
 - 每个 P2/P4 release 必须演练“处理中断”和“上一版本 rollback”。
 
 See [Security](04-security-privacy.md), [Snapshot ADR](adr/0003-snapshots.md).
+
+## Audit addendum
+
+- Detached Worker 无法继续访问旧 Pi Extension `ctx.modelRegistry`；应支持明确的 standalone authorized ModelAdapter 或在 Pi 活动命令中执行，远端传输需 opt-in。
+- `getSessionFile()` 可能不存在；禁用/未授权项目不进行自动捕获。
+- Git updater 会清理 package checkout，SQLite/Notes/Jobs/Snapshots 必须在外部 user data root。
+- File rename + SQLite transaction 不是同一个原子提交，需 publish journal/reconciler。
+- 恢复机制必须尊重遗忘 tombstone，防止重建索引时把原始 session 中被遗忘信息再次召回。

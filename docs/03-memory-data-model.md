@@ -1,3 +1,5 @@
+> **源码复核更正**：`source_file_hash` 随 Pi JSONL 追加/迁移变化，绝不能作为 source 主键。使用 `(source_namespace, session_id, entry_id)` 稳定身份与独立内容 hash。参考 [Runtime Matrix](12-runtime-lifecycle-matrix.md)。
+
 # Memory data model, storage & schema evolution
 
 ## 1. Principle
@@ -11,8 +13,8 @@ type SourceRef = {
   sessionId: string;
   entryId: string;
   branchLeafId?: string;
-  sourceFile: string;       // canonical path, only inside approved Pi directory
-  sourceHash?: string;      // sha256 of evidence fragment
+  sourceFile: string;       // mutable locator; verify path allowlist
+  sourceHash?: string;      // evidence fragment hash only; NOT whole-file identity
 };
 type CanonicalEvent = {
   ref: SourceRef;
@@ -78,7 +80,10 @@ CREATE TABLE sessions (
   last_indexed_offset INTEGER NOT NULL DEFAULT 0
 );
 CREATE TABLE events (
-  source_key TEXT PRIMARY KEY,
+  source_key TEXT PRIMARY KEY,  -- namespace/session/entry stable identity
+  source_namespace TEXT NOT NULL,
+  owner_id TEXT NOT NULL,
+  project_id TEXT NOT NULL,
   session_id TEXT NOT NULL,
   entry_id TEXT NOT NULL,
   parent_id TEXT,
@@ -115,7 +120,7 @@ CREATE TABLE ingestion_jobs (
 );
 ```
 
-注意：此 DDL 为初版设计，FTS5 external-content 需要为 insert/update/delete 编写触发器，并处理 rebuild；实现时还需加入 project/scope 权限列、关联索引、migration 和 WAL 参数。`events_fts` 不应对含密钥的原始字段建索引。
+注意：此 DDL 为初版设计，实际查询必须在 SQL 中验证 owner/project/branch scope，不能只在返回结果后过滤。FTS5 external-content 需要为 insert/update/delete 编写触发器，并处理 rebuild；实现时还需加入 project/scope 权限列、关联索引、migration 和 WAL 参数。`events_fts` 不应对含密钥的原始字段建索引。
 
 ## 5. Namespace & project identity
 

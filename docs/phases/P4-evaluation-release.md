@@ -4,7 +4,7 @@
 
 ## 0. Entry / Exit
 
-**Entry**：G1–G3 的主功能可运行且版本/安全约束稳定；Model adapter 可记录在线与离线 usage。
+**Entry**：G0–G3 的 Pi 兼容与主功能可运行且版本/安全约束稳定；Model adapter 可记录在线与离线 usage。
 
 **Exit G4**：
 - 执行 A/B/C/D/E 主消融并提交 manifest、任务结果和全部成本；
@@ -111,3 +111,9 @@
 Potential future phases: cross-agent adapters, MCP, opt-in team sharing, embedding/hybrid retrieval, smarter event-driven Dreaming, richer Memory Explorer UI. None should block P4.
 
 Task-by-task: [P4 Backlog](../tasks/P4-backlog.md). Protocol: [Evaluation](../06-evaluation-plan.md).
+
+## G4 installation hardening additions
+
+- 真实 Pi Git 源码安装、project/local/global trust、`pi config`、`pi list`、`pi remove`、`pi update --extensions` 和 npm pack/publish matrix 必须有日志。
+- 自动化测试必须覆盖 Pi source/Node/Bun 二进制分发中所有项目声明支持的组合；对未测试平台标注 unsupported/not tested。
+- 运行用户 Git 更新，验证外部 Memory SQLite、Notes、Snapshots 不受 `git clean -fdx` 影响。

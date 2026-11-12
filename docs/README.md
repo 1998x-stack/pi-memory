@@ -1,6 +1,15 @@
 # Documentation hub / 文档导航
 
-> 状态：设计与任务规划，尚无运行时代码。文档目标是把四个 Phase 拆成可实现、可验证、可回滚的工程交付。
+> 状态：**P0 仅安装探针已加入；Memory Engine 尚未实现**，也尚无真实 Pi 安装运行证据。源码复核和功能验收结果必须分开标记。
+
+## 上游复核、安装与 QA（先读）
+
+- [P0 安装 Gate](phases/P0-install-contract.md) · [P0 任务看板](tasks/P0-backlog.md)
+- [Pi 源码审计 / 20 项风险](10-upstream-audit.md)
+- [Package：Git/npm/local 安装全流程](11-installation-and-packaging.md)
+- [Extension/Session 生命周期矩阵](12-runtime-lifecycle-matrix.md)
+- [复核后路线图](13-verified-roadmap.md)
+- [安装验收矩阵](qa/install-test-matrix.md) · [数据正确性/安全矩阵](qa/data-integrity-test-matrix.md)
 
 ## 总体设计
 
@@ -17,10 +26,11 @@
 | [接口与 CLI 契约](08-api-and-cli-contracts.md) | Extension、Engine、Tools、CLI |
 | [论文与 Pi 源码映射](09-source-mapping.md) | 设计依据、已核实接口、非官方推导 |
 
-## 四阶段执行手册
+## P0–P4 执行手册
 
 | Phase | 核心成果 | 执行文档 | 任务看板 |
 |---|---|---|---|
+| P0 | Pi 安装与宿主兼容契约 | [P0](phases/P0-install-contract.md) | [P0 Backlog](tasks/P0-backlog.md) |
 | P1 | 可检索的 Pi Session、手工 Memory、基础 L4 | [P1](phases/P1-transcripts-retrieval.md) | [P1 Backlog](tasks/P1-backlog.md) |
 | P2 | 自动候选经验、Evidence、Dreaming、Snapshot | [P2](phases/P2-capture-dreaming.md) | [P2 Backlog](tasks/P2-backlog.md) |
 | P3 | Wiki、知识关系、智能注入与更新传播 | [P3](phases/P3-wiki-injection.md) | [P3 Backlog](tasks/P3-backlog.md) |

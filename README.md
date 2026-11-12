@@ -2,13 +2,18 @@
 
 A local-first, evidence-grounded long-term memory architecture for Pi coding agent.
 
-> Status: **design / documentation only**. No runtime implementation is claimed in this repository yet.
+> Status: **P0 Package install probe only**. `/pi-memory-doctor` is present to verify Extension discovery; Memory search, capture, Dreaming, Wiki and CLI are NOT implemented or tested on a live Pi.
 
 This repository specifies a four-phase implementation plan aligned with Anthropic's *The components of agent memory*: Transcripts, Memory Notes, Memory Representations (Wiki), Injected Context, and offline Dreaming.
+
+## P0 package probe
+
+The source manifest points to `extensions/pi-memory.ts`. On a machine with compatible Pi, use `pi -e ./` and `/pi-memory-doctor` to test discovery. For pinned Git tests use `pi install git:github.com/1998x-stack/pi-memory@<reviewed-commit>` (replace the placeholder). Real Pi installation is pending; see [P0](docs/phases/P0-install-contract.md). Host Pi declares Node >=22.19.0.
 
 ## Documentation
 
 - [Documentation index](docs/README.md)
+- [Pi upstream audit](docs/10-upstream-audit.md) and [verified roadmap](docs/13-verified-roadmap.md)
 - [Roadmap and delivery gates](docs/05-roadmap.md)
 - [Overall architecture](docs/01-architecture.md)
 - [Phase 1–4 execution plans](docs/phases/)

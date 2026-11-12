@@ -1,0 +1,14 @@
+# Build/test dependencies
+node_modules/
+dist/
+coverage/
+*.log
+# Never place user memory in the extension checkout
+.pi-memory/
+memory.sqlite
+memory.sqlite-*
+*.sqlite-wal
+*.sqlite-shm
+# Local test/run outputs
+evals/reports/
+tmp/

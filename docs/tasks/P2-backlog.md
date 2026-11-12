@@ -43,3 +43,8 @@
 ## Phase gate
 
 G2: 由对应 Phase 主文档的 Exit Criteria 判定，不仅以 checkbox 数量判定。
+
+
+## Upstream audit gate additions
+
+本 Phase 的全部任务除原有 DoD 外，还须满足 [P0安装契约](../phases/P0-install-contract.md)、[Pi源码审计](../10-upstream-audit.md) 的相应 F01–F20 修复条款，并提交 [生命周期矩阵](../12-runtime-lifecycle-matrix.md) 和 [数据/安全测试矩阵](../qa/data-integrity-test-matrix.md) 的通过证据。
