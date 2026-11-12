@@ -10,21 +10,24 @@ export const DEFAULT_MAX_LINE_BYTES = 2 * 1024 * 1024;
 
 /**
  * @param {string} filePath
- * @param {{maxLineBytes?: number, highWaterMark?: number}} [options]
+ * @param {{maxLineBytes?: number, highWaterMark?: number, startOffset?:number, header?:object, initialLineNumber?:number}} [options]
  */
 export async function readPiSessionFile(filePath, options = {}) {
   const maxLineBytes = options.maxLineBytes ?? DEFAULT_MAX_LINE_BYTES;
   if (!Number.isSafeInteger(maxLineBytes) || maxLineBytes < 128) throw new RangeError("Invalid maxLineBytes");
-  const header = { value: null };
+  const startOffset = options.startOffset ?? 0;
+  if (!Number.isSafeInteger(startOffset) || startOffset < 0) throw new RangeError("Invalid startOffset");
+  if (startOffset > 0 && !options.header?.id) throw new Error("Incremental reader requires a previously validated header");
+  const header = { value: options.header ?? null };
   const entries = [];
   const records = [];
   const issues = [];
   let pending = [];
   let pendingLength = 0;
   let discardingOversized = false;
-  let completeOffset = 0;
-  let lineNumber = 0;
-  let sawRecord = false;
+  let completeOffset = startOffset;
+  let lineNumber = options.initialLineNumber ?? 0;
+  let sawRecord = Boolean(options.header);
 
   function consumeLine() {
     lineNumber += 1;
@@ -86,7 +89,7 @@ export async function readPiSessionFile(filePath, options = {}) {
     entries.push(value);
   }
 
-  const stream = createReadStream(filePath, { highWaterMark: options.highWaterMark ?? 64 * 1024 });
+  const stream = createReadStream(filePath, { start: startOffset, highWaterMark: options.highWaterMark ?? 64 * 1024 });
   for await (const chunk of stream) {
     let start = 0;
     for (;;) {
@@ -106,6 +109,7 @@ export async function readPiSessionFile(filePath, options = {}) {
     entries,
     records,
     completeOffset,
+    completeLines: lineNumber,
     pendingBytes: pendingLength,
     issues
   };
