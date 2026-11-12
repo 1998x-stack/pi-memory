@@ -8,7 +8,7 @@ Review date: 2026-11-12. The results below are **real GitHub Actions executions*
 - [SIGKILL WAL recovery run 43147564344](https://github.com/1998x-stack/pi-memory/actions/runs/43147564344): all jobs passed, including crash rollback, FTS integrity and reconnect.
 - [L4 token/cache usage parser run 43147636731](https://github.com/1998x-stack/pi-memory/actions/runs/43147636731): all jobs passed; analyzes numeric Pi usage records without exposing prompt contents.
 - [L4 Note ID retrieval run 43147705782](https://github.com/1998x-stack/pi-memory/actions/runs/43147705782): model-free tests confirmed only approved Notes are retrievable by ID with Evidence, and revoked/foreign Notes are hidden.
-- [Latest full command/revocation integration](https://github.com/1998x-stack/pi-memory/actions/runs/43147969626): final workflow status should be checked in Actions; do not infer pass from the link alone.
+- [Latest complete P1 suite 43147969626](https://github.com/1998x-stack/pi-memory/actions/runs/43147969626): **SUCCESS**, all 3 jobs passed: core/SQLite SIGKILL and L2/L4 unit tests, Pi RPC index→new Session→Note approval→ID lookup→revoke, Pi SDK L4 Hook, Git install/disable/update/remove.
 
 ## Executed evidence
 

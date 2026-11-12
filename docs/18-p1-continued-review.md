@@ -1,6 +1,6 @@
 # P1 continued implementation: release review and proof matrix
 
-> Maintainer audit for the follow-on work after the verified manual L1 search slice. This is a **P1 prototype**; code/test coverage does not imply G0/G1 production sign-off.
+> Maintainer audit for the follow-on work after the verified manual L1 search slice. This is a **P1 prototype**; code/test coverage does not imply G0/G1 production sign-off. All three jobs in [GitHub Actions run 43147969626](https://github.com/1998x-stack/pi-memory/actions/runs/43147969626) passed on Pi 1.5.2, Node 22.19.0 / Linux.
 
 ## 1. What has been implemented
 
