@@ -1,0 +1,14 @@
+{"type":"session","version":3,"id":"session-p1-v3-fixture","cwd":"/synthetic/repo","timestamp":"2026-11-12T00:00:00.000Z"}
+{"type":"message","id":"u1","parentId":null,"timestamp":"2026-11-12T00:00:01.000Z","message":{"role":"user","content":"Fix DATABASE_POOL_TIMEOUT","timestamp":1794441601000}}
+{"type":"message","id":"a2","parentId":"u1","timestamp":"2026-11-12T00:00:02.000Z","message":{"role":"assistant","provider":"anthropic","model":"synthetic-model","content":[{"type":"toolCall","id":"call-failed","name":"bash","arguments":{"command":"npm test"}}],"timestamp":1794441602000}}
+{"type":"message","id":"t3","parentId":"a2","timestamp":"2026-11-12T00:00:03.000Z","message":{"role":"toolResult","toolCallId":"call-failed","toolName":"bash","isError":true,"content":[{"type":"text","text":"DATABASE_POOL_TIMEOUT"}],"timestamp":1794441603000}}
+{"type":"message","id":"a4","parentId":"t3","timestamp":"2026-11-12T00:00:04.000Z","message":{"role":"assistant","provider":"anthropic","model":"synthetic-model","content":[{"type":"text","text":"Initial wrong diagnosis"}],"timestamp":1794441604000}}
+{"type":"branch_summary","id":"bs5","parentId":"u1","timestamp":"2026-11-12T00:00:05.000Z","fromId":"a4","summary":"Abandoned incorrect branch."}
+{"type":"message","id":"u6","parentId":"bs5","timestamp":"2026-11-12T00:00:06.000Z","message":{"role":"user","content":"Investigate again","timestamp":1794441606000}}
+{"type":"message","id":"a7","parentId":"u6","timestamp":"2026-11-12T00:00:07.000Z","message":{"role":"assistant","provider":"anthropic","model":"synthetic-model","content":[{"type":"toolCall","id":"call-fixed","name":"bash","arguments":{"command":"npm test"}}],"timestamp":1794441607000}}
+{"type":"message","id":"t7r","parentId":"a7","timestamp":"2026-11-12T00:00:08.000Z","message":{"role":"toolResult","toolCallId":"call-fixed","toolName":"bash","isError":false,"content":[{"type":"text","text":"All 14 tests passed"}],"timestamp":1794441608000}}
+{"type":"compaction","id":"c8","parentId":"t7r","timestamp":"2026-11-12T00:00:09.000Z","summary":"Validated new approach","firstKeptEntryId":"u6","tokensBefore":50000,"systemMessage":{"role":"system","content":"Synthesized prompt checkpoint","timestamp":1794441609000}}
+{"type":"context_edit","id":"e9","parentId":"c8","timestamp":"2026-11-12T00:00:10.000Z","targetId":"a7","replacement":null}
+{"type":"custom_message","id":"cm10","parentId":"e9","timestamp":"2026-11-12T00:00:11.000Z","customType":"synthetic-check","content":"Check after compaction","display":false}
+{"type":"model_change","id":"mc11","parentId":"cm10","timestamp":"2026-11-12T00:00:12.000Z","provider":"openai","modelId":"synthetic-model-2"}
+{"type":"thinking_level_change","id":"tl12","parentId":"mc11","timestamp":"2026-11-12T00:00:13.000Z","thinkingLevel":"high"}
