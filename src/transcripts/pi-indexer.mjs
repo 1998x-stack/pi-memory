@@ -128,6 +128,7 @@ export async function ingestPiSession(store, inputPath, options) {
   };
   // Ensure event ingestion, FTS triggers and durable checkpoint commit together.
   store.transaction(() => {
+    store.checkCheckpoint(options.sourceNamespace,header.id,previous);
     if (mode === "full") store.deleteSessionEvents(options.sourceNamespace,header.id);
     for (let i=0;i<canonical.length;i++) {
       const event=canonical[i];
