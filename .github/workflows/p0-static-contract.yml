@@ -45,7 +45,7 @@ jobs:
         run: node tests/pi-rpc-install-smoke.mjs
       - name: Test real Pi manual index + cross-session recall via RPC
         run: node tests/pi-rpc-recall-smoke.mjs
-      - name: Differential-test projection vs installed Pi SDK
+      - name: Verify untrusted Pi project cannot access local memory\n        run: node tests/pi-rpc-untrusted-smoke.mjs\n      - name: Differential-test projection vs installed Pi SDK
         run: node tests/pi-projection-diff.mjs
       - name: Verify L4 before_agent_start against real Pi SDK (no model API)
         run: node tests/pi-l4-sdk-hook-smoke.mjs
