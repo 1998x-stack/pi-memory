@@ -152,3 +152,19 @@ export async function ingestPiSession(store, inputPath, options) {
     issues:doc.issues
   };
 }
+
+/**
+ * Bounded optimistic retries for independent Pi processes that parsed against
+ * a now-stale SQLite checkpoint. Never retry permission/source validation.
+ */
+export async function ingestPiSessionWithRetry(store,inputPath,options,{attempts=4}={}){
+  if(!Number.isSafeInteger(attempts)||attempts<1||attempts>8)throw new RangeError("Invalid retry count");
+  for(let i=0;i<attempts;i++){
+    try{return await ingestPiSession(store,inputPath,options);}
+    catch(error){
+      if(error?.code!=="INGESTION_CONFLICT" || i===attempts-1)throw error;
+      await new Promise(resolveWait=>setTimeout(resolveWait,25*(i+1)));
+    }
+  }
+  throw new Error("Unreachable ingestion retry state");
+}

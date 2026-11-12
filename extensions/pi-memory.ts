@@ -14,7 +14,7 @@ import { dirname, join, resolve } from "node:path";
 import { Type } from "typebox";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { openMemoryStore } from "../src/store/sqlite-store.mjs";
-import { ingestPiSession } from "../src/transcripts/pi-indexer.mjs";
+import { ingestPiSession, ingestPiSessionWithRetry } from "../src/transcripts/pi-indexer.mjs";
 import { reconcileMissingSessions } from "../src/store/integrity.mjs";
 import { openNoteRepository, noteToMarkdown } from "../src/notes/notes.mjs";
 import { openL4Controller } from "../src/injection/l4-index.mjs";
@@ -153,7 +153,7 @@ export default function piMemoryExtension(pi: ExtensionAPI): void {
           let done=0,failed=0;
           for (const sess of sessions) {
             try {
-              await ingestPiSession(store,sess.source_file,{
+              await ingestPiSessionWithRetry(store,sess.source_file,{
                 ...scope,allowedSessionRoot:root,expectedSessionCwd:ctx.cwd,
                 captureApproved:true,forceFull:true
               });
@@ -238,7 +238,7 @@ export default function piMemoryExtension(pi: ExtensionAPI): void {
         }
         const sourceFile = ctx.sessionManager.getSessionFile();
         if (!sourceFile) { notify("No persisted Pi session yet; run a task before indexing.", "warning"); return; }
-        const report=await ingestPiSession(store,sourceFile,{
+        const report=await ingestPiSessionWithRetry(store,sourceFile,{
           ...scope,
           allowedSessionRoot:ctx.sessionManager.getSessionDir(),
           expectedSessionCwd:ctx.cwd,
