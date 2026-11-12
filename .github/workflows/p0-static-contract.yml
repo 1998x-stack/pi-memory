@@ -43,6 +43,8 @@ jobs:
       - run: npm install -g @earendil-works/pi-coding-agent@1.5.2
       - name: Test actual Pi Extension registration through RPC
         run: node tests/pi-rpc-install-smoke.mjs
+      - name: Test real Pi manual index + cross-session recall via RPC
+        run: node tests/pi-rpc-recall-smoke.mjs
 
   pi-rpc-git-install:
     runs-on: ubuntu-latest
