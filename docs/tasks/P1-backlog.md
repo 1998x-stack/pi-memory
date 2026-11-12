@@ -56,11 +56,11 @@ G1: 由对应 Phase 主文档的 Exit Criteria 判定，不仅以 checkbox 数�
 | P1-02 | partial | Pi v3 branched-compacted fixture | fork/older versions/multi-root/nestedCalls full fixture corpus |
 | P1-03 | partial | Streaming reader, stable normalized source ID, corrupt-tail tests | native full fixture coverage, schema version strategy |
 | P1-04 | partial | branch/compaction/context edit projection and differential CI | observed-leaf event journal, broader forks/compactions (**11 Pi SDK differential cases passed**) |
-| P1-05 | partial | SQLite FTS5 transactional checkpoint, incremental/rewrite tests | DB migrations, source-deletion and crash/concurrency recovery |
+| P1-05 | partial | FTS5 transactional checkpoint, source-deletion reconciliation, CAS, SIGKILL WAL crash test, full reindex | multi-process load suite and broader migrations |
 | P1-06 | partial | lexical FTS, project-scope prefilter | exact code/path ranking evaluation and FTS rebuild |
-| P1-07 | partial | path/cwd scope, basic redaction and owner+project filter | hardened secret policy, documented forget/error behavior |
-| P1-08 | not started | schema documents only | manual Notes repository/verification |
-| P1-09 | partial | actual Pi memory_search Tool, manual index command | bounded L4 and automated lifecycle capture safeguards |
+| P1-07 | partial | path/cwd/symlink scope, redaction, owner+project isolation, source-hash validation | hardened privacy and hard forget/retention policy |
+| P1-08 | partial | SQLite-backed Notes candidate/approve/revoke, source Evidence, Markdown export, Pi RPC E2E | verified schema validation, full UX, edit/forget |
+| P1-09 | partial | actual Pi memory_search, L2 Note pointer lookup, opt-in 512-byte metadata-only L4, verified Pi SDK before_agent_start Hook | automated catch-up, model cache/token cost experiment |
 | P1-10 | partial | Pi RPC synthetic session → new_session → search | actual coding task with reproducible success criteria |
 
-**Review status:** L1 retrieval and Pi Package integration work; G1 is not satisfied. Start next with source-deletion reconciliation + manual Notes approval before enabling automatic capture.
+**Review status:** L1 retrieval and Pi Package integration work; G1 is not satisfied. Start next with hard purge/forget, race stress and broader Pi trust/platform compatibility before enabling automatic capture.

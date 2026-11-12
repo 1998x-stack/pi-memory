@@ -32,7 +32,7 @@ In the Pi TUI, in a project you trust:
 /pi-memory index
 /new
 /pi-memory search DATABASE_POOL_TIMEOUT
-# The model can use the memory_search tool when tools are enabled.
+# The model can use memory_search for historical evidence or approved mem_<uuid> Note details when tools are enabled.
 ```
 
 Manual Note workflow after indexing (replace the source IDs and Note ID with your actual values):
@@ -66,7 +66,7 @@ For development from this repo root, use `pi -e ./`; `pi -ne` disables discovere
 - [P0 upstream/install audit](docs/10-upstream-audit.md) · [Test results](docs/qa/install-results.md)
 - [P1 parser and provenance](docs/14-p1-parser-foundation.md)
 - [P1 scoped FTS indexer](docs/15-p1-indexer-fts.md)
-- [Pi runtime integration/recall contract](docs/16-p1-live-recall.md)\n- [Integrity + human L2 Notes + controlled L4](docs/17-p1-integrity-notes-l4.md)
+- [Pi runtime integration/recall contract](docs/16-p1-live-recall.md)\n- [Integrity + human L2 Notes + controlled L4](docs/17-p1-integrity-notes-l4.md)\n- [P1 follow-on audit and proof matrix](docs/18-p1-continued-review.md)
 - [Revised P0–P4 roadmap](docs/13-verified-roadmap.md) · [P1 backlog](docs/tasks/P1-backlog.md)
 
 ## Architecture

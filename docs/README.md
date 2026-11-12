@@ -15,7 +15,7 @@
 
 - [P1 Parser + Branch/Compaction Projection](14-p1-parser-foundation.md)
 - [P1 SQLite FTS5 + 增量索引](15-p1-indexer-fts.md)
-- [P1 真实 Pi Runtime Recall 接入](16-p1-live-recall.md)\n- [P1 数据完整性、L2 Notes 和 L4 安全注入](17-p1-integrity-notes-l4.md)
+- [P1 真实 Pi Runtime Recall 接入](16-p1-live-recall.md)\n- [P1 数据完整性、L2 Notes 和 L4 安全注入](17-p1-integrity-notes-l4.md)\n- [P1 本轮深度复核、实际验收与剩余风险](18-p1-continued-review.md)
 - [GitHub Actions 结果与剩余 Gate](qa/install-results.md)
 
 ## 总体设计

@@ -80,7 +80,7 @@ The `add` command only creates `candidate`, even when source line came from a su
 
 ### Why metadata-only?
 
-Pi's `before_agent_start.systemPromptOptions.sections` is a high-priority system prompt location. Copying Note title/body or arbitrary Tool Results directly into it would risk **promotion of untrusted data into instructions**. Therefore the initial safe L4 contract intentionally includes **only stable generated Note IDs, enumerated type names, and evidence counts**, with a fixed code-authored navigation sentence. Actual content remains low-trust `memory_search` Tool data.
+Pi's `before_agent_start.systemPromptOptions.sections` is a high-priority system prompt location. Copying Note title/body or arbitrary Tool Results directly into it would risk **promotion of untrusted data into instructions**. Therefore the initial safe L4 contract intentionally includes **only stable generated Note IDs, enumerated type names, and evidence counts**, with a fixed code-authored navigation sentence. Actual content remains low-trust `memory_search` Tool data. The Tool accepts an approved `mem_<uuid>` pointer in its `query` field to retrieve the full Note with Evidence. Revoked, disputed, stale or foreign-project IDs are not returned.
 
 L4 is **off by default**, activated per trusted project explicitly with:
 
@@ -108,7 +108,7 @@ This is a strict **byte** bound, not tokenizer-exact: `estimatedTokens = ceil(by
 - `changes`: times the stable L4 section hash changed since the previous render;
 - `lastBytes`: last section byte size.
 
-Because titles/body are omitted, a Note with unchanged approval/evidence has a stable index hash across new runs. **These metrics are not actual provider cache hit/miss or token usage metrics**. At P4, compare 3 arms on identical models and tasks: L4 off, L4 on (stable), L4 on with Note changes, collecting Pi assistant usage `cacheRead`, `cacheWrite`, `input`, overall prompt tokens and per-run latency. Report all model and maintenance costs.
+Because titles/body are omitted, a Note with unchanged approval/evidence has a stable index hash across new runs. **These metrics are not actual provider cache hit/miss or token usage metrics**. For numerical provider usage from previously recorded Pi Session JSONL, run `node scripts/l4-usage-report.mjs <session-a.jsonl> <session-b.jsonl>`; see [continued review](18-p1-continued-review.md). At P4, compare 3 arms on identical models and tasks: L4 off, L4 on (stable), L4 on with Note changes, collecting Pi assistant usage `cacheRead`, `cacheWrite`, `input`, overall prompt tokens and per-run latency. Report all model and maintenance costs.
 
 ## 4. Operational tests and exit gates
 
@@ -116,7 +116,7 @@ Because titles/body are omitted, a Note with unchanged approval/evidence has a s
 |---|---|---|
 | Session deletion | delete JSONL, verify immediate query suppression + reconciliation | privacy purge and source-folder audit |
 | Writer races | two SQLite handles, checkpoint stale conflict | process-kill concurrency/load suite |
-| Crash recovery | throw inside tx, verify FTS/event rollback | true SIGKILL + WAL restart suite |
+| Crash recovery | thrown exception and real SIGKILL before commit, followed by WAL/FTS verify | multi-writer process-kill matrix remains |
 | Full reindex | preserved IDs and Note FK references | migrations, corrupt-file quarantine UX |
 | L2 state transitions | candidate → approved → revoked; wrong scope, source loss | stronger schema validation & human-review UX |
 | L4 safety | malicious Note title/body omitted, capped bytes, revoke removes | Pi model request with real token/cache accounting |
