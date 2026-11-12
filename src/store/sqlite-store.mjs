@@ -3,7 +3,8 @@
  * node:sqlite is currently experimental on Node 22; verify host compatibility.
  */
 import { DatabaseSync } from "node:sqlite";
-import { mkdirSync, chmodSync, statSync, realpathSync } from "node:fs";
+import { mkdirSync, chmodSync } from "node:fs";
+import { sourceEventStillValid } from "../security/source-proof.mjs";
 import { dirname, join } from "node:path";
 import { homedir } from "node:os";
 
@@ -162,15 +163,14 @@ export function openMemoryStore(databasePath = defaultMemoryDatabasePath()) {
       // Quoted phrases avoid raw FTS query operators and error-prone user syntax.
       const match = tokens.map(t => '"' + t.replaceAll('"','') + '"').join(" AND ");
       const rows = db.prepare(
-        "SELECT e.id,e.source_namespace,e.session_id,e.entry_id,e.entry_type,e.role,e.tool_name,e.is_error,e.raw_hash,e.snippet,s.source_file,bm25(events_fts) AS rank " +
+        "SELECT e.id,e.source_namespace,e.session_id,e.entry_id,e.entry_type,e.role,e.tool_name,e.is_error,e.raw_hash,e.snippet,e.source_offset,s.source_file,bm25(events_fts) AS rank " +
         "FROM events_fts JOIN events e ON events_fts.rowid=e.rowid JOIN sessions s ON s.source_namespace=e.source_namespace AND s.session_id=e.session_id " +
         "WHERE events_fts MATCH ? AND e.owner_id=? AND e.project_id=? " +
         "ORDER BY rank ASC LIMIT ?"
-      ).all(match,scope.ownerId,scope.projectId,bounded);
-      // Fail closed on missing native Pi sources even before scheduled reconciliation.
-      return rows.filter(r => {
-        try { return statSync(r.source_file).isFile() && realpathSync(r.source_file) === r.source_file; } catch { return false; }
-      }).map(r => ({
+      ).all(match,scope.ownerId,scope.projectId,Math.max(20,bounded*4));
+      // Return only source-verified snippets. A same-size/replayed rewrite cannot
+      // expose stale SQLite content while waiting for the next full reindex.
+      return rows.filter(sourceEventStillValid).slice(0,bounded).map(r => ({
         id:r.id,sourceNamespace:r.source_namespace,sessionId:r.session_id,
         entryId:r.entry_id,layer:"transcript",status:"raw",
         entryType:r.entry_type,role:r.role,toolName:r.tool_name,

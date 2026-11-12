@@ -3,48 +3,20 @@
  * Every approved Note has real, current, project-scoped Pi event evidence.
  * User approval is an explicit command; the LLM cannot mutate status.
  */
-import { randomUUID, createHash } from "node:crypto";
-import { existsSync, openSync, readSync, closeSync, realpathSync } from "node:fs";
+import { randomUUID } from "node:crypto";
+import { sourceEventStillValid } from "../security/source-proof.mjs";
+export { sourceEventStillValid } from "../security/source-proof.mjs";
 import { assertScope } from "../store/sqlite-store.mjs";
 import { redactSecrets } from "../security/redact.mjs";
 
 const validTypes = new Set(["fact","procedure","decision","preference","failure"]);
 const idPattern = /^mem_[0-9a-f-]{36}$/i;
-const hash = text => createHash("sha256").update(text).digest("hex");
 
 function requireText(v, field, max) {
   if (typeof v !== "string" || !v.trim() || v.length > max || /[\x00-\x08\x0B\x0E-\x1F]/.test(v)) {
     throw new Error("Invalid "+field+" (1–"+max+" printable characters)");
   }
   return redactSecrets(v.trim());
-}
-
-/** Ensure a Pi source line remains byte-identical to its indexed hash. */
-export function sourceEventStillValid(e) {
-  if (!e || typeof e.source_file !== "string" || !e.source_file || !e.raw_hash) return false;
-  let fd;
-  try {
-    if (realpathSync(e.source_file) !== e.source_file) return false;
-    fd = openSync(e.source_file,"r");
-    const maxBytes=2*1024*1024;
-    const chunks=[];
-    let total=0,position=Number(e.source_offset);
-    if (!Number.isSafeInteger(position) || position < 0) return false;
-    for (;;) {
-      const buf=Buffer.alloc(Math.min(4096,maxBytes-total));
-      if (buf.length===0) return false;
-      const bytes=readSync(fd,buf,0,buf.length,position);
-      if (!bytes) return false;
-      const piece=buf.subarray(0,bytes);
-      const lf=piece.indexOf(10);
-      if(lf>=0){ chunks.push(piece.subarray(0,lf)); total+=lf; break; }
-      chunks.push(piece);total+=piece.length;position+=piece.length;
-    }
-    let raw=Buffer.concat(chunks,total);
-    if(raw.at(-1)===13)raw=raw.subarray(0,-1);
-    return hash(raw)===e.raw_hash;
-  } catch { return false; }
-  finally { if(fd!==undefined)closeSync(fd); }
 }
 
 const selectEvidenceSql =
