@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/1998x-stack/pi-memory/blob/main/docs/schemas/memory-hit.schema.json",
+  "title": "Pi Memory Retrieval Hit v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "layer",
+    "scope",
+    "status",
+    "title",
+    "snippet",
+    "score",
+    "evidence"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "layer": {
+      "enum": [
+        "transcript",
+        "note",
+        "wiki"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "owner_id"
+      ],
+      "properties": {
+        "level": {
+          "enum": [
+            "global",
+            "project",
+            "task"
+          ]
+        },
+        "owner_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "project_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "session_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "branch_leaf_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "project"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "project_id"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "task"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "project_id",
+              "session_id"
+            ]
+          }
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "raw",
+        "candidate",
+        "verified",
+        "disputed",
+        "superseded",
+        "revoked"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "snippet": {
+      "type": "string",
+      "maxLength": 4000
+    },
+    "score": {
+      "type": "number"
+    },
+    "rank": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "session_id",
+          "entry_id"
+        ],
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Pi SessionHeader.id"
+          },
+          "entry_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Pi SessionEntry.id"
+          },
+          "branch_leaf_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "evidence_kind": {
+            "enum": [
+              "tool_result",
+              "test_result",
+              "user_statement",
+              "code_review",
+              "human_approval",
+              "trace_event"
+            ]
+          },
+          "excerpt_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "applicability_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "stale": {
+      "type": "boolean"
+    },
+    "source_available": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/1998x-stack/pi-memory/blob/main/docs/schemas/memory-note.schema.json",
+  "title": "Pi Memory Note v1 (structured representation; Markdown frontmatter may mirror fields)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "scope",
+    "type",
+    "status",
+    "title",
+    "content",
+    "evidence",
+    "created_at",
+    "updated_at",
+    "source_trust"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^mem_[A-Za-z0-9_-]+$"
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "owner_id"
+      ],
+      "properties": {
+        "level": {
+          "enum": [
+            "global",
+            "project",
+            "task"
+          ]
+        },
+        "owner_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "project_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "session_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "branch_leaf_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "project"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "project_id"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "task"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "project_id",
+              "session_id"
+            ]
+          }
+        }
+      ]
+    },
+    "type": {
+      "enum": [
+        "fact",
+        "procedure",
+        "decision",
+        "preference",
+        "failure"
+      ]
+    },
+    "status": {
+      "enum": [
+        "candidate",
+        "verified",
+        "disputed",
+        "superseded",
+        "revoked"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "content": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20000
+    },
+    "applicability_conditions": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "session_id",
+          "entry_id"
+        ],
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Pi SessionHeader.id"
+          },
+          "entry_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Pi SessionEntry.id"
+          },
+          "branch_leaf_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "evidence_kind": {
+            "enum": [
+              "tool_result",
+              "test_result",
+              "user_statement",
+              "code_review",
+              "human_approval",
+              "trace_event"
+            ]
+          },
+          "excerpt_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "supersedes": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_verified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_trust": {
+      "enum": [
+        "user_explicit",
+        "tool_verified",
+        "model_inference",
+        "human_reviewed"
+      ]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Model confidence is informational only, never equivalent to verification"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "verified"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "evidence": {
+            "minItems": 1
+          }
+        },
+        "required": [
+          "last_verified_at"
+        ]
+      }
+    }
+  ]
+}

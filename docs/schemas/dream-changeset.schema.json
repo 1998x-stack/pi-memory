@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/1998x-stack/pi-memory/blob/main/docs/schemas/dream-changeset.schema.json",
+  "title": "Pi Memory Dream Changeset v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "draft_id",
+    "base_snapshot_id",
+    "project_id",
+    "state",
+    "operations",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "draft_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_snapshot_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state": {
+      "enum": [
+        "proposed",
+        "validated",
+        "approved",
+        "rejected",
+        "published"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "model_id": {
+      "type": "string"
+    },
+    "prompt_version": {
+      "type": "string"
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operation_id",
+          "op",
+          "reason"
+        ],
+        "properties": {
+          "operation_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "op": {
+            "enum": [
+              "create",
+              "update",
+              "merge",
+              "supersede",
+              "revoke",
+              "promote",
+              "wiki_update"
+            ]
+          },
+          "memory_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "before_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "after_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "session_id",
+                "entry_id"
+              ],
+              "properties": {
+                "session_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Pi SessionHeader.id"
+                },
+                "entry_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Pi SessionEntry.id"
+                },
+                "branch_leaf_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source_hash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "evidence_kind": {
+                  "enum": [
+                    "tool_result",
+                    "test_result",
+                    "user_statement",
+                    "code_review",
+                    "human_approval",
+                    "trace_event"
+                  ]
+                },
+                "excerpt_hash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          },
+          "affected_wiki_pages": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "content_after": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "validation_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "is_valid",
+        "schema_ok",
+        "evidence_ok",
+        "scope_ok",
+        "secrets_ok",
+        "links_ok",
+        "budget_ok"
+      ],
+      "properties": {
+        "is_valid": {
+          "type": "boolean"
+        },
+        "schema_ok": {
+          "type": "boolean"
+        },
+        "evidence_ok": {
+          "type": "boolean"
+        },
+        "scope_ok": {
+          "type": "boolean"
+        },
+        "secrets_ok": {
+          "type": "boolean"
+        },
+        "links_ok": {
+          "type": "boolean"
+        },
+        "budget_ok": {
+          "type": "boolean"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "reviewer": {
+      "type": "string"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "published_snapshot_id": {
+      "type": "string"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "enum": [
+              "approved",
+              "published"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "required": [
+          "validation_report",
+          "reviewer",
+          "approved_at"
+        ],
+        "properties": {
+          "validation_report": {
+            "properties": {
+              "is_valid": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
