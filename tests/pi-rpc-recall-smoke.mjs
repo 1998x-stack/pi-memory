@@ -9,6 +9,8 @@ import { tmpdir, homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { createHash } from "node:crypto";
 import { openMemoryStore } from "../src/store/sqlite-store.mjs";
+import { openNoteRepository } from "../src/notes/notes.mjs";
+import { openL4Controller } from "../src/injection/l4-index.mjs";
 
 const cwd=resolve(import.meta.dirname,"..");
 const temp=await mkdtemp(join(tmpdir(),"pi-memory-recall-"));
@@ -91,7 +93,35 @@ try {
     const scope={ownerId:d("user:"+homedir()),projectId:d("project:"+cwd)};
     const hits=store.search(needle,scope);
     assert.ok(hits.some(h=>h.entryId==="t2"));
+
     assert.ok(store.countEvents(scope) >= 2, "Pi may persist additional session metadata during command processing");
+    // Notes are not created or approved by the model: every transition is a user command.
+    const created=await request("prompt",{message:
+      "/pi-memory note add fact rpc-p1-recall#t2 | "+needle+" | Manual Pi evidence from a prior session"});
+    assert.equal(created.disposition,"handled");
+    const notes=openNoteRepository(store);
+    const candidates=notes.list({...scope,sourceNamespace:d("pi-agent-dir:"+agentDir)});
+    assert.equal(candidates.length,1);
+    assert.equal(candidates[0].status,"candidate");
+    const id=candidates[0].id;
+    const approved=await request("prompt",{message:"/pi-memory note approve "+id});
+    assert.equal(approved.disposition,"handled");
+    assert.equal(notes.get(id,scope).status,"verified");
+    await request("prompt",{message:"/pi-memory l4 on"});
+    const l4=openL4Controller(store);
+    const index=l4.render(scope);
+    assert.equal(index.count,1);
+    assert.ok(index.text.includes(id));
+    assert.ok(!index.text.includes(needle),"L4 must never contain raw user Note title");
+    await request("prompt",{message:"/pi-memory l4 preview"});
+    assert.ok(notifications.some(n=>n.includes(id) && n.includes("metadata only")));
+    await request("prompt",{message:"/pi-memory note export "+id});
+    const expectedMarkdown=join(agentDir,"memory","notes",id+".md");
+    assert.ok((await readFile(expectedMarkdown,"utf8")).includes(id));
+    const revoke=await request("prompt",{message:"/pi-memory note revoke "+id});
+    assert.equal(revoke.disposition,"handled");
+    assert.equal(notes.get(id,scope).status,"revoked");
+    assert.equal(l4.render(scope).count,0,"revoked Note must disappear from L4 immediately");
   }finally{store.close();}
   process.stdout.write("PASS real Pi RPC cross-session FTS memory recall, no model call\n");
 }finally{
