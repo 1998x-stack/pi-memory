@@ -1,6 +1,6 @@
 # P1-01–P1-04: tested Pi Session parser foundation
 
-These modules implement a deliberately **read-only** first slice of P1: streaming JSONL parsing, Pi v3 tree lineage, compaction/context-edit projection, and stable canonical source metadata. They are NOT yet an installed memory engine, FTS index, or memory_search tool.
+These modules implement a deliberately **read-only** first slice of P1: streaming JSONL parsing, Pi v3 tree lineage, compaction/context-edit projection, and stable canonical source metadata. This file describes the isolated reader slice. Follow-up stages **now add** an FTS5 indexer and Pi memory_search Tool; see [P1 FTS](15-p1-indexer-fts.md) and [live recall](16-p1-live-recall.md).
 
 ## Contract
 

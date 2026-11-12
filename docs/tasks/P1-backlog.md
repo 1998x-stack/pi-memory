@@ -1,6 +1,6 @@
 # P1 Implementation backlog — searchable, branch-aware Pi Memory
 
-> Primary plan: [P1 execution manual](../phases/P1-transcripts-retrieval.md). 所有任务均为 **TODO**。工作量估算仅供优先级排序，不表示工期承诺。
+> Primary plan: [P1 execution manual](../phases/P1-transcripts-retrieval.md). **P1 Preview 已有真实代码和 CI，但所有任务的完整 DoD/G1 Gate 尚未达到**。下面列出部分交付，不能仅因子功能通过就将整个任务勾选。
 
 依赖主线：`P1-01/02 → P1-03/04 → P1-05/06/07 → P1-08/09 → P1-10`。P1-02 可与 P1-01 并行。
 
@@ -48,3 +48,19 @@ G1: 由对应 Phase 主文档的 Exit Criteria 判定，不仅以 checkbox 数�
 ## Upstream audit gate additions
 
 本 Phase 的全部任务除原有 DoD 外，还须满足 [P0安装契约](../phases/P0-install-contract.md)、[Pi源码审计](../10-upstream-audit.md) 的相应 F01–F20 修复条款，并提交 [生命周期矩阵](../12-runtime-lifecycle-matrix.md) 和 [数据/安全测试矩阵](../qa/data-integrity-test-matrix.md) 的通过证据。
+## Current implementation review — partial progress
+
+| Task | State | Current evidence | Remaining acceptance |
+|---|---|---|---|
+| P1-01 | partial | Node22.19 + node:test + GitHub Actions | TypeScript strict, migration/typecheck baseline |
+| P1-02 | partial | Pi v3 branched-compacted fixture | fork/older versions/multi-root/nestedCalls full fixture corpus |
+| P1-03 | partial | Streaming reader, stable normalized source ID, corrupt-tail tests | native full fixture coverage, schema version strategy |
+| P1-04 | partial | branch/compaction/context edit projection and differential CI | observed-leaf event journal, varied Pi forks/compactions |
+| P1-05 | partial | SQLite FTS5 transactional checkpoint, incremental/rewrite tests | DB migrations, source-deletion and crash/concurrency recovery |
+| P1-06 | partial | lexical FTS, project-scope prefilter | exact code/path ranking evaluation and FTS rebuild |
+| P1-07 | partial | path/cwd scope, basic redaction and owner+project filter | hardened secret policy, documented forget/error behavior |
+| P1-08 | not started | schema documents only | manual Notes repository/verification |
+| P1-09 | partial | actual Pi memory_search Tool, manual index command | bounded L4 and automated lifecycle capture safeguards |
+| P1-10 | partial | Pi RPC synthetic session → new_session → search | actual coding task with reproducible success criteria |
+
+**Review status:** L1 retrieval and Pi Package integration work; G1 is not satisfied. Start next with source-deletion reconciliation + manual Notes approval before enabling automatic capture.

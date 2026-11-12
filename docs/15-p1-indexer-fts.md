@@ -29,7 +29,7 @@ explicit trusted-session path and owner/project scope
 - Realpath scope denies traversals and symlink escapes.
 - System messages, arbitrary custom entries and tool arguments are never indexed as text.
 - Basic secret-pattern redaction is defense in depth, **not complete DLP**. Never assume all sensitive content is detected.
-- `memory_search` Extension registration, manual Notes, branch journal and Dreaming are **not** completed by this slice.
+- `memory_search` Extension **is now registered** and `/pi-memory index` is implemented in follow-up stage. Manual Notes, branch journal and Dreaming remain incomplete; see [live Pi recall](16-p1-live-recall.md).
 
 ## Next hardening needs
 

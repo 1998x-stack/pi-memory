@@ -1,6 +1,6 @@
 # P0 install and runtime contract backlog
 
-> P0 is **not completed**. Source-only manifest and install probe have been added, but no real Pi runtime install has been performed in this audit environment.
+> **G0 still open**, but real Linux Pi 1.5.2/Node22.19 CI has now verified source+Git Package install, RPC registration, no-extensions behavior, and Git update/remove state retention. Trust/TUI/reload/multi-platform remain.
 
 | ID | Priority | Task | Depends | Output | Acceptance |
 |---|---|---|---|---|---|
@@ -15,9 +15,9 @@
 
 - [x] P0-01 upstream pin recorded in audit (Pi commit a40abeca; source review completed)
 - [x] P0-02 source entrypoint package static checks ([CI passed](https://github.com/1998x-stack/pi-memory/actions/runs/43142215140); no live Pi claim)
-- [ ] P0-03 real installation smoke on Pi
-- [ ] P0-04 trust/mode behavior verified
-- [ ] P0-05 update/removal state preservation verified
+- [ ] P0-03 real installation smoke on Pi — **partial**: Git and one-shot source PASS ([CI](https://github.com/1998x-stack/pi-memory/actions/runs/43143058406)); permanent local and trust-gated project install pending
+- [ ] P0-04 trust/mode behavior verified — **partial**: RPC and --no-extensions PASS; trust-negative/TUI/JSON/print/reload pending
+- [x] P0-05 update/removal state preservation verified **for pinned Linux Git install** ([CI](https://github.com/1998x-stack/pi-memory/actions/runs/43144184617)); other platforms remain Gate G0 follow-up
 - [ ] P0-06 G0 report approved
 
 Use [the P0 manual](../phases/P0-install-contract.md). Do not check any box until measured.
