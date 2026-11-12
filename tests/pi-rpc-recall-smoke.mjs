@@ -11,6 +11,7 @@ import { createHash } from "node:crypto";
 import { openMemoryStore } from "../src/store/sqlite-store.mjs";
 import { openNoteRepository } from "../src/notes/notes.mjs";
 import { openL4Controller } from "../src/injection/l4-index.mjs";
+import { openForgetRepository } from "../src/governance/forget.mjs";
 
 const cwd=resolve(import.meta.dirname,"..");
 const temp=await mkdtemp(join(tmpdir(),"pi-memory-recall-"));
@@ -137,6 +138,19 @@ try {
     assert.ok(notifications.slice(notificationsBeforeRevokeSearch)
       .some(message=>/No matching (?:historical entries|indexed evidence)/.test(message)),
       "Revoked note must not resolve from a copied L4 pointer");
+    // Governance is explicitly user-commanded and leaves native Pi JSONL alone.
+    await request("prompt",{message:"/pi-memory forget note "+id+" confirm"});
+    const forget=openForgetRepository(store);
+    assert.equal(forget.isNoteForgotten(id,{...scope,sourceNamespace:d("pi-agent-dir:"+agentDir)}),true);
+    assert.equal(notes.get(id,scope),null);
+    await assert.rejects(readFile(expectedMarkdown,"utf8"),{code:"ENOENT"});
+    await request("prompt",{message:"/pi-memory forget session rpc-p1-recall confirm"});
+    assert.equal(forget.isSessionForgotten("rpc-p1-recall",{
+      ...scope,sourceNamespace:d("pi-agent-dir:"+agentDir)
+    }),true);
+    assert.equal(store.countEvents(scope),0);
+    assert.ok((await readFile(source,"utf8")).includes("rpc-p1-recall"),"native Pi file must remain");
+
   }finally{store.close();}
   process.stdout.write("PASS real Pi RPC cross-session FTS memory recall, no model call\n");
 }finally{
