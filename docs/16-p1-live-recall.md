@@ -42,6 +42,7 @@ This establishes a **real Pi process + two Session objects + durable retrieval**
 CI evidence:
 - [Real Pi source and Git install smoke passed](https://github.com/1998x-stack/pi-memory/actions/runs/43143058406)
 - [P1 manual cross-session recall passed](https://github.com/1998x-stack/pi-memory/actions/runs/43144014841)
+- [Pi official buildSessionProjection differential (11 cases) + all integration jobs passed](https://github.com/1998x-stack/pi-memory/actions/runs/43144372252)
 - [Pipeline definitions](../.github/workflows/p0-static-contract.yml) (relative link above resolves from docs to repository root).
 
 ## Known limitations / P1 next

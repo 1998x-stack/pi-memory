@@ -7,7 +7,7 @@ As of 2026-11-12, upstream source was reviewed at Pi [a40abeca](https://github.c
 | Pi Package manifest and host Typebox/peer semantics | source verified + CI passed |
 | Source Extension loading and pinned Git install via Pi RPC | **PASS on Linux** |
 | Pi Extension commands and manual cross-session Recall | **PASS on Linux RPC** |
-| Pi projection matches upstream across fixtures | see latest differential CI |
+| Pi projection matches upstream in 11 differential test cases | **PASS** ([CI](https://github.com/1998x-stack/pi-memory/actions/runs/43144372252)) |
 | Source JSONL streaming and canonical identity | deterministic CI tests passed |
 | Scoped FTS incremental append/rewrite/redaction baseline | deterministic CI tests passed |
 | Git update/remove avoids deleting outside-checkout private data | **PASS on Linux** |
@@ -15,7 +15,7 @@ As of 2026-11-12, upstream source was reviewed at Pi [a40abeca](https://github.c
 | True human-approved L2, L3 Wiki, L4 and Dreaming | **NOT IMPLEMENTED** |
 | Real coding task success & independent security audit | **NOT RUN** |
 
-CI references: [source+Git loader](https://github.com/1998x-stack/pi-memory/actions/runs/43143058406), [P1 parser/SQLite](https://github.com/1998x-stack/pi-memory/actions/runs/43143783323), [new-session recall](https://github.com/1998x-stack/pi-memory/actions/runs/43144014841), [disable/update/remove](https://github.com/1998x-stack/pi-memory/actions/runs/43144184617).
+Latest [all-green P0/P1 integration and projection differential run](https://github.com/1998x-stack/pi-memory/actions/runs/43144372252).\n\nCI references: [source+Git loader](https://github.com/1998x-stack/pi-memory/actions/runs/43143058406), [P1 parser/SQLite](https://github.com/1998x-stack/pi-memory/actions/runs/43143783323), [new-session recall](https://github.com/1998x-stack/pi-memory/actions/runs/43144014841), [disable/update/remove](https://github.com/1998x-stack/pi-memory/actions/runs/43144184617).
 
 ## Remaining correctness caveats
 

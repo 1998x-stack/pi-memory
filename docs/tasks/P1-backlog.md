@@ -55,7 +55,7 @@ G1: 由对应 Phase 主文档的 Exit Criteria 判定，不仅以 checkbox 数�
 | P1-01 | partial | Node22.19 + node:test + GitHub Actions | TypeScript strict, migration/typecheck baseline |
 | P1-02 | partial | Pi v3 branched-compacted fixture | fork/older versions/multi-root/nestedCalls full fixture corpus |
 | P1-03 | partial | Streaming reader, stable normalized source ID, corrupt-tail tests | native full fixture coverage, schema version strategy |
-| P1-04 | partial | branch/compaction/context edit projection and differential CI | observed-leaf event journal, varied Pi forks/compactions |
+| P1-04 | partial | branch/compaction/context edit projection and differential CI | observed-leaf event journal, broader forks/compactions (**11 Pi SDK differential cases passed**) |
 | P1-05 | partial | SQLite FTS5 transactional checkpoint, incremental/rewrite tests | DB migrations, source-deletion and crash/concurrency recovery |
 | P1-06 | partial | lexical FTS, project-scope prefilter | exact code/path ranking evaluation and FTS rebuild |
 | P1-07 | partial | path/cwd scope, basic redaction and owner+project filter | hardened secret policy, documented forget/error behavior |

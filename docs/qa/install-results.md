@@ -13,11 +13,15 @@ Review date: 2026-11-12. The results below are **real GitHub Actions executions*
 | Real Pi RPC `/pi-memory index` then `new_session` then `/pi-memory search` | PASS | [run 43144014841](https://github.com/1998x-stack/pi-memory/actions/runs/43144014841) |
 | `pi -ne` hides installed Extension; explicit `-e` can enable | PASS | [run 43144184617](https://github.com/1998x-stack/pi-memory/actions/runs/43144184617) |
 | Pinned Git `pi update --extensions` and `pi remove` retain external memory sentinel | PASS | [run 43144184617](https://github.com/1998x-stack/pi-memory/actions/runs/43144184617) |
-| Pi `buildSessionProjection` differential test | IN PROGRESS | [workflow](https://github.com/1998x-stack/pi-memory/actions) |
+| Pi `buildSessionProjection` differential test, 11 cases | **PASS** | [run 43144372252](https://github.com/1998x-stack/pi-memory/actions/runs/43144372252) |
 | P0 project trust negative case and local permanent install | NOT RUN | I03/I04 |
 | Reload/TUI/print/JSON stdout safety, alternate OS/Bun | NOT RUN | I06–I11/I16 |
 | Corruption and process crash recovery, concurrent writers | NOT RUN | P1/P4 fault matrix |
 | Automatic Notes, L4, Dreaming, Wiki and long-horizon eval | NOT IMPLEMENTED | P1-08/P1-09, P2–P4 |
+
+## Latest all-green CI
+
+[Run 43144372252](https://github.com/1998x-stack/pi-memory/actions/runs/43144372252) passed all three jobs: model-free core/FTS5 suite, source-loaded Pi RPC + new-session recall + upstream differential projection, and pinned Git install/disable/update/remove data-retention checks. This is a Linux/Node/Pi-1.5.2 validation, not full G0/G1 certification.
 
 ## What the real Pi integration proves
 
