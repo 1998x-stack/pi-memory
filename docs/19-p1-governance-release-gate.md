@@ -1,6 +1,6 @@
 # Phase P1-G — Memory Governance, crash recovery and Pi trust validation
 
-Status: **Preview implementation, not G1 production sign-off**. [Run 43152614255](https://github.com/1998x-stack/pi-memory/actions/runs/43152614255) passed 3/3 jobs on Linux/Node22.19/Pi1.5.2. This follows [P1 source-indexing](15-p1-indexer-fts.md), [real Pi recall](16-p1-live-recall.md), and [manual L2/L4](17-p1-integrity-notes-l4.md).
+Status: **Preview implementation, not G1 production sign-off**. Latest [3/3 all-green regression run 43152874398](https://github.com/1998x-stack/pi-memory/actions/runs/43152874398) includes crash-left Markdown temporary cleanup. [Run 43152614255](https://github.com/1998x-stack/pi-memory/actions/runs/43152614255) passed 3/3 jobs on Linux/Node22.19/Pi1.5.2. This follows [P1 source-indexing](15-p1-indexer-fts.md), [real Pi recall](16-p1-live-recall.md), and [manual L2/L4](17-p1-integrity-notes-l4.md).
 
 This stage addresses three previously open dependencies:
 1. A user can explicitly **forget derived Memory**, not merely revoke a Note from lookup.

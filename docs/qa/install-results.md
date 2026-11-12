@@ -10,6 +10,10 @@ Review date: 2026-11-12. The results below are **real GitHub Actions executions*
 - [L4 Note ID retrieval run 43147705782](https://github.com/1998x-stack/pi-memory/actions/runs/43147705782): model-free tests confirmed only approved Notes are retrievable by ID with Evidence, and revoked/foreign Notes are hidden.
 - [Latest complete P1 suite 43147969626](https://github.com/1998x-stack/pi-memory/actions/runs/43147969626): **SUCCESS**, all 3 jobs passed: core/SQLite SIGKILL and L2/L4 unit tests, Pi RPC index→new Session→Note approval→ID lookup→revoke, Pi SDK L4 Hook, Git install/disable/update/remove.
 
+## Final P1-G regression (2026-11-12)
+
+[Run 43152874398](https://github.com/1998x-stack/pi-memory/actions/runs/43152874398) **SUCCESS, 3/3 CI jobs** after the orphan Markdown temporary-file cleanup regex fix, including the new crash-residual regression, multi-process CAS stress, Pi untrusted-project RPC gate and Git Package lifecycle.
+
 ## P1-G governance CI proof
 
 [Run 43152614255](https://github.com/1998x-stack/pi-memory/actions/runs/43152614255) passed **3/3 jobs**: Note/Session derived Forget, outbox retry, five-process CAS, source attestation, Pi RPC --no-approve trust denial, Pi L2/L4 and Git install/update/remove (Linux/Node 22.19.0/Pi 1.5.2).
