@@ -11,6 +11,7 @@ import { readPiSessionFile } from "./pi-reader.mjs";
 import { normalizePiRecords } from "./pi-normalize.mjs";
 import { indexablePiText } from "../security/redact.mjs";
 import { assertScope } from "../store/sqlite-store.mjs";
+import { openForgetRepository } from "../governance/forget.mjs";
 
 function sha(bytes) { return createHash("sha256").update(bytes).digest("hex"); }
 
@@ -72,6 +73,8 @@ export async function ingestPiSession(store, inputPath, options) {
   }
   const source = await validateSourcePath(inputPath, options.allowedSessionRoot);
   const header = await readHeader(source);
+  const forget=openForgetRepository(store);
+  if(forget.isSessionForgotten(header.id,options)) throw new Error("Session was intentionally forgotten; refusing re-index");
   if (options.expectedSessionCwd) {
     const expected = await realpath(options.expectedSessionCwd);
     const sessionCwd = await realpath(header.cwd).catch(() => null);
@@ -130,6 +133,7 @@ export async function ingestPiSession(store, inputPath, options) {
   // Ensure event ingestion, FTS triggers and durable checkpoint commit together.
   store.transaction(() => {
     store.checkCheckpoint(options.sourceNamespace,header.id,previous);
+    if(forget.isSessionForgotten(header.id,options)) throw new Error("Session was forgotten by a concurrent operation");
     if (mode === "full") store.beginFullRebuild();
     for (let i=0;i<canonical.length;i++) {
       if (mode === "full") store.keepEvent(canonical[i].id);

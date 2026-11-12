@@ -9,6 +9,7 @@ import { homedir } from "node:os";
 
 const SCHEMA = [
   "PRAGMA journal_mode=WAL;",
+  "PRAGMA secure_delete=ON;",
   "PRAGMA busy_timeout=5000;",
   "PRAGMA foreign_keys=ON;",
   "CREATE TABLE IF NOT EXISTS sessions (source_namespace TEXT NOT NULL, session_id TEXT NOT NULL, owner_id TEXT NOT NULL, project_id TEXT NOT NULL, source_file TEXT NOT NULL, header_json TEXT NOT NULL, last_complete_offset INTEGER NOT NULL, last_complete_line INTEGER NOT NULL, source_size INTEGER NOT NULL, source_mtime_ms REAL NOT NULL, source_dev TEXT NOT NULL, source_ino TEXT NOT NULL, last_record_offset INTEGER, last_record_bytes INTEGER, last_record_hash TEXT, updated_at TEXT NOT NULL, PRIMARY KEY (source_namespace,session_id));",
@@ -21,7 +22,8 @@ const SCHEMA = [
   "CREATE TABLE IF NOT EXISTS memory_notes (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, project_id TEXT NOT NULL, status TEXT NOT NULL CHECK (status IN ('candidate','verified','disputed','revoked')), note_type TEXT NOT NULL CHECK (note_type IN ('fact','procedure','decision','preference','failure')), title TEXT NOT NULL, content TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, verified_at TEXT, revision INTEGER NOT NULL DEFAULT 1, evidence_count INTEGER NOT NULL DEFAULT 0, source_trust TEXT NOT NULL DEFAULT 'user_explicit');",
   "CREATE INDEX IF NOT EXISTS memory_notes_scope ON memory_notes(owner_id,project_id,status);",
   "CREATE TABLE IF NOT EXISTS memory_note_evidence (note_id TEXT NOT NULL REFERENCES memory_notes(id) ON DELETE CASCADE, event_id TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE, source_hash TEXT NOT NULL, PRIMARY KEY (note_id,event_id));",
-  "CREATE TABLE IF NOT EXISTS memory_project_settings (owner_id TEXT NOT NULL, project_id TEXT NOT NULL, l4_enabled INTEGER NOT NULL DEFAULT 0, l4_runs INTEGER NOT NULL DEFAULT 0, l4_changes INTEGER NOT NULL DEFAULT 0, l4_last_hash TEXT, l4_last_bytes INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(owner_id,project_id));"
+  "CREATE TABLE IF NOT EXISTS memory_project_settings (owner_id TEXT NOT NULL, project_id TEXT NOT NULL, l4_enabled INTEGER NOT NULL DEFAULT 0, l4_runs INTEGER NOT NULL DEFAULT 0, l4_changes INTEGER NOT NULL DEFAULT 0, l4_last_hash TEXT, l4_last_bytes INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(owner_id,project_id));",
+  "CREATE TABLE IF NOT EXISTS memory_tombstones (owner_id TEXT NOT NULL, project_id TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('note','session')), item_hash TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(owner_id,project_id,kind,item_hash));"
 ].join("\n");
 
 export function defaultMemoryDatabasePath() {
