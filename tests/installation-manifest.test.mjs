@@ -34,4 +34,6 @@ test("Pi Extension exposes manually scoped P1 search but no automatic capture", 
   assert.match(text, /registerCommand\("pi-memory"/);
   assert.match(text, /captureApproved:true/);
   assert.doesNotMatch(text, /pi.on\("agent_settled"/);
+  assert.match(text, /pi.on\("before_agent_start"/);
+  assert.match(text, /event.systemPromptOptions.sections\["pi-memory"\]/);
 });
