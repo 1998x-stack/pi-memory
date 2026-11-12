@@ -72,6 +72,13 @@ export async function ingestPiSession(store, inputPath, options) {
   }
   const source = await validateSourcePath(inputPath, options.allowedSessionRoot);
   const header = await readHeader(source);
+  if (options.expectedSessionCwd) {
+    const expected = await realpath(options.expectedSessionCwd);
+    const sessionCwd = await realpath(header.cwd).catch(() => null);
+    if (!sessionCwd || sessionCwd !== expected) {
+      throw new Error("Pi Session cwd does not match trusted project scope");
+    }
+  }
   const before = await stat(source);
   const previous = store.getSession(options.sourceNamespace, header.id);
   if (previous && (previous.owner_id !== options.ownerId || previous.project_id !== options.projectId)) {
