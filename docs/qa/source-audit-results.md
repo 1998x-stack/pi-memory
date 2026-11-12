@@ -11,7 +11,8 @@ As of 2026-11-12, upstream source was reviewed at Pi [a40abeca](https://github.c
 | Source JSONL streaming and canonical identity | deterministic CI tests passed |
 | Scoped FTS incremental append/rewrite/redaction baseline | deterministic CI tests passed |
 | Git update/remove avoids deleting outside-checkout private data | **PASS on Linux** |
-| Project trust refusal/TUI/print/Windows/Bun/native integrations | **NOT RUN** |
+| Explicit --no-approve trust refusal | **PASS Linux** ([CI](https://github.com/1998x-stack/pi-memory/actions/runs/43152614255)) |
+| Project-local trust UI/TUI/print/Windows/Bun | **NOT RUN** |
 | Human-approved L2 and L4 metadata-only pointers | **IMPLEMENTED IN P1 PROTOTYPE**, Pi SDK Hook CI verified |\n| L3 Wiki and Dreaming | **NOT IMPLEMENTED** |
 | Real coding task success & independent security audit | **NOT RUN** |
 

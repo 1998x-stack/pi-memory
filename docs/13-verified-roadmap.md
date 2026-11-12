@@ -82,6 +82,6 @@ Phase 0 is **not feature delivery**. It closes a fundamental risk: a theoretical
 
 **Not yet completed**: real installation on Pi, functional memory engine, SQLite integration, automatic extraction, Dreaming, Wiki and any benchmark performance results.
 
-Because the review host does not have a compatible installed Pi CLI and Node version is below upstream Pi's declared minimum, live install execution remains an explicit G0 task rather than a fabricated success claim.
+Historical note superseded: **Pi 1.5.2/Node22.19/Linux live CI passed**, including trust rejection, source/Git Package, L2/L4 and derived Forget ([run 43152614255](https://github.com/1998x-stack/pi-memory/actions/runs/43152614255)). G0/G1 remain open for other modes/platforms.
 
 Read [P0](phases/P0-install-contract.md) and [the Phase 1 manual](phases/P1-transcripts-retrieval.md).

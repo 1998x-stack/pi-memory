@@ -10,6 +10,10 @@ Review date: 2026-11-12. The results below are **real GitHub Actions executions*
 - [L4 Note ID retrieval run 43147705782](https://github.com/1998x-stack/pi-memory/actions/runs/43147705782): model-free tests confirmed only approved Notes are retrievable by ID with Evidence, and revoked/foreign Notes are hidden.
 - [Latest complete P1 suite 43147969626](https://github.com/1998x-stack/pi-memory/actions/runs/43147969626): **SUCCESS**, all 3 jobs passed: core/SQLite SIGKILL and L2/L4 unit tests, Pi RPC index→new Session→Note approval→ID lookup→revoke, Pi SDK L4 Hook, Git install/disable/update/remove.
 
+## P1-G governance CI proof
+
+[Run 43152614255](https://github.com/1998x-stack/pi-memory/actions/runs/43152614255) passed **3/3 jobs**: Note/Session derived Forget, outbox retry, five-process CAS, source attestation, Pi RPC --no-approve trust denial, Pi L2/L4 and Git install/update/remove (Linux/Node 22.19.0/Pi 1.5.2).
+
 ## Executed evidence
 
 | Verification | Status | Evidence |
@@ -22,9 +26,11 @@ Review date: 2026-11-12. The results below are **real GitHub Actions executions*
 | `pi -ne` hides installed Extension; explicit `-e` can enable | PASS | [run 43144184617](https://github.com/1998x-stack/pi-memory/actions/runs/43144184617) |
 | Pinned Git `pi update --extensions` and `pi remove` retain external memory sentinel | PASS | [run 43144184617](https://github.com/1998x-stack/pi-memory/actions/runs/43144184617) |
 | Pi `buildSessionProjection` differential test, 11 cases | **PASS** | [run 43144372252](https://github.com/1998x-stack/pi-memory/actions/runs/43144372252) |
-| P0 project trust negative case and local permanent install | NOT RUN | I03/I04 |
+| Explicit --no-approve trust refusal | **PASS** | [run 43152614255](https://github.com/1998x-stack/pi-memory/actions/runs/43152614255) |
+| Project-local trust prompt and local permanent install | NOT RUN | I03/I04 |
 | Reload/TUI/print/JSON stdout safety, alternate OS/Bun | NOT RUN | I06–I11/I16 |
-| Corruption and process crash recovery, concurrent writers | NOT RUN | P1/P4 fault matrix |
+| SIGKILL WAL + five-process CAS stress | **PASS Linux** | [run 43152614255](https://github.com/1998x-stack/pi-memory/actions/runs/43152614255) |
+| Disk-full/reader-concurrency/other OS fault matrix | NOT RUN | P1/P4 |
 | Auto-extracted Notes, Dreaming, Wiki and long-horizon eval | NOT IMPLEMENTED | P2–P4; manual L2 + opt-in L4 implemented in P1 |
 
 ## Latest all-green CI

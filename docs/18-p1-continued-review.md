@@ -72,7 +72,7 @@ These are **observational** cohorts; do not infer causal cache performance impro
 ## 5. Remaining quality/security release blockers
 
 1. End-user hard delete/forget across original Pi sessions, derived SQLite, exported Markdown, WAL/backups and tombstones. Revocation is **not** total deletion.
-2. Project trust-negative and project-local package smoke, reload and print/TUI, Windows/Bun/other Pi releases.
+2. Explicit --no-approve trust rejection **passed**; project-local trust prompts, reload, TUI/print and Windows/Bun/other versions still pending.
 3. Multiple concurrent running Pi sessions under heavy source churn; long-lived WAL/SQLite lock contention, timeouts and retries.
 4. Robust redaction beyond known credential regexes; prompt-injection and privacy adversarial fixtures.
 5. Full JSONL history across legacy versions, fork/tree activity journal, nestedCalls and source-deletion propagation to all knowledge layers.
@@ -86,3 +86,6 @@ These are **observational** cohorts; do not infer causal cache performance impro
 - **G2/G3/G4: planned**, not implemented in this stage.
 
 Relevant: [original Pi audit](10-upstream-audit.md), [L2/L4 deep design](17-p1-integrity-notes-l4.md), [P1 backlog](tasks/P1-backlog.md), [QA](qa/install-results.md).
+
+
+Latest Governance pass: [3/3 CI jobs](https://github.com/1998x-stack/pi-memory/actions/runs/43152614255), details [P1-G](19-p1-governance-release-gate.md).
