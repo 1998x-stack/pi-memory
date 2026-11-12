@@ -13,8 +13,8 @@
 
 ## Checklist
 
-- [ ] P0-01 upstream pin recorded in audit
-- [ ] P0-02 source entrypoint package static checks
+- [x] P0-01 upstream pin recorded in audit (Pi commit a40abeca; source review completed)
+- [x] P0-02 source entrypoint package static checks ([CI passed](https://github.com/1998x-stack/pi-memory/actions/runs/43142215140); no live Pi claim)
 - [ ] P0-03 real installation smoke on Pi
 - [ ] P0-04 trust/mode behavior verified
 - [ ] P0-05 update/removal state preservation verified

@@ -8,7 +8,7 @@ This repository specifies a four-phase implementation plan aligned with Anthropi
 
 ## P0 package probe
 
-The source manifest points to `extensions/pi-memory.ts`. On a machine with compatible Pi, use `pi -e ./` and `/pi-memory-doctor` to test discovery. For pinned Git tests use `pi install git:github.com/1998x-stack/pi-memory@<reviewed-commit>` (replace the placeholder). Real Pi installation is pending; see [P0](docs/phases/P0-install-contract.md). Host Pi declares Node >=22.19.0.
+The source manifest points to `extensions/pi-memory.ts`. On a machine with compatible Pi, use `pi -e ./` and `/pi-memory-doctor` to test discovery. For pinned Git tests use `pi install git:github.com/1998x-stack/pi-memory@<reviewed-commit>` (replace the placeholder). [P0 static CI is green](https://github.com/1998x-stack/pi-memory/actions/runs/43142215140) (manifest + npm pack); live Pi installation is pending; see [P0](docs/phases/P0-install-contract.md). Host Pi declares Node >=22.19.0.
 
 ## Documentation
 
